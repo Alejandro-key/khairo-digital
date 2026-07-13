@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Áreas Específicas · Khairo Growth Systems</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../kairo-icon.png">
+  <link rel="apple-touch-icon" href="../kairo-icon.png">
+  <meta name="theme-color" content="#07080c">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #07080c;
+      --panel: #0d0f16;
+      --card: #0b0d14;
+      --border: rgba(255,255,255,0.05);
+      --muted: #6b7a96;
+      --muted2: #9aa3b2;
+      --text: #e6eef8;
+      --accent1: #4f8cff;
+      --accent2: #7b61ff;
+      --green: #00e57a;
+      --orange: #ff9f40;
+      --cyan: #00d9ff;
+      --pink: #ff5c87;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ─── CANVAS ─── */
+    #particles-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── SCROLL PROGRESS ─── */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      z-index: 9000;
+      transition: width 0.08s linear;
+    }
+
+    /* ══════════════════════════════════════════
+       ─── HEADER ───
+    ══════════════════════════════════════════ */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      background: rgba(7,8,12,0.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand img {
+      height: 32px;
+      width: auto;
+      border-radius: 7px;
+    }
+    .brand .meta { display: flex; flex-direction: column; line-height: 1; }
+    .brand .meta .title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px; letter-spacing: -0.3px; }
+    .brand .meta .sub { color: var(--muted); font-size: 10px; font-weight: 600; margin-top: 2px; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(79,140,255,0.22);
+      transition: transform 0.18s;
+      white-space: nowrap;
+    }
+    .nav-cta-btn:active { transform: scale(0.97); }
+
+    /* Hamburger */
+    .hamburger {
+      width: 40px; height: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      padding: 0;
+    }
+    .hamburger span {
+      display: block;
+      width: 18px; height: 1.5px;
+      background: var(--muted2);
+      border-radius: 2px;
+      transition: all 0.25s;
+    }
+    .hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ─── DRAWER MENU ─── */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 700;
+      background: rgba(4,6,15,0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .drawer-overlay.active { opacity: 1; pointer-events: all; }
+
+    .drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: min(280px, 85vw);
+      height: 100%;
+      background: #0b0d17;
+      border-left: 1px solid var(--border);
+      z-index: 750;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.2,.9,.25,1);
+      padding: 80px 24px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+    }
+    .drawer.active { transform: translateX(0); }
+
+    .drawer a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      color: var(--muted2);
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.18s;
+    }
+    .drawer a:active { background: rgba(255,255,255,0.04); color: var(--text); }
+    .drawer .drawer-divider { height: 1px; background: var(--border); margin: 8px 0; }
+    .drawer a.drawer-cta {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff;
+      justify-content: center;
+      font-weight: 800;
+      margin-top: 8px;
+    }
+
+    /* ══════════════════════════════════════════
+       ─── HERO ───
+    ══════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 40px 18px 32px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent1);
+      margin-bottom: 16px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 20px; height: 2px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      border-radius: 2px;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 8vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -1.2px;
+      margin-bottom: 16px;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(105deg, var(--accent1) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-desc {
+      color: var(--muted2);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* Hero CTA buttons */
+    .hero-cta-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      border: 0;
+      font-size: 15px;
+      transition: transform 0.15s, opacity 0.15s;
+      width: 100%;
+    }
+    .btn:active { transform: scale(0.97); opacity: 0.9; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(79,140,255,0.28);
+    }
+    .btn-ghost {
+      border: 1px solid rgba(79,140,255,0.25);
+      color: var(--accent1);
+      background: transparent;
+    }
+
+    /* Hero stats mini-row */
+    .hero-stats-mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .hero-stat-mini {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-stat-mini::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); font-weight: 600; line-height: 1.3; }
+
+    .hero-stat-mini.wide {
+      grid-column: span 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-stat-mini.wide .stat-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .hero-stat-mini.wide .stat-text { flex: 1; }
+    .hero-stat-mini.wide .stat-title { font-weight: 800; font-size: 13px; margin-bottom: 2px; }
+    .hero-stat-mini.wide .stat-sub { font-size: 11px; color: var(--muted); }
+
+    /* ══════════════════════════════════════════
+       ─── SECTION HEADER ───
+    ══════════════════════════════════════════ */
+    .section-wrap {
+      position: relative;
+      z-index: 1;
+      padding: 0 18px 56px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header-left h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .section-header-left p { color: var(--muted); font-size: 13px; }
+
+    .section-count {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      opacity: 0.3;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       ─── AREA CARDS ───
+    ══════════════════════════════════════════ */
+    .areas-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .area-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      opacity: 0;
+      animation: cardReveal 0.5s ease-out forwards;
+    }
+
+    .area-card:nth-child(1) { animation-delay: 0.05s; }
+    .area-card:nth-child(2) { animation-delay: 0.12s; }
+    .area-card:nth-child(3) { animation-delay: 0.19s; }
+    .area-card:nth-child(4) { animation-delay: 0.26s; }
+    .area-card:nth-child(5) { animation-delay: 0.33s; }
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Accent top bar */
+    .area-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 3px;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    /* Glow top-right */
+    .area-card::after {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .area-card:active { transform: scale(0.99); }
+
+    /* Color variants */
+    .area-card.strategy::before { background: var(--green); }
+    .area-card.strategy::after { background: radial-gradient(circle, rgba(0,229,122,0.08), transparent 70%); }
+    .area-card.strategy:active { border-color: rgba(0,229,122,0.25); }
+
+    .area-card.creative::before { background: linear-gradient(90deg, var(--accent1), var(--accent2)); }
+    .area-card.creative::after { background: radial-gradient(circle, rgba(79,140,255,0.08), transparent 70%); }
+    .area-card.creative:active { border-color: rgba(79,140,255,0.25); }
+
+    .area-card.automation::before { background: var(--cyan); }
+    .area-card.automation::after { background: radial-gradient(circle, rgba(0,217,255,0.08), transparent 70%); }
+    .area-card.automation:active { border-color: rgba(0,217,255,0.25); }
+
+    .area-card.print::before { background: var(--orange); }
+    .area-card.print::after { background: radial-gradient(circle, rgba(255,159,64,0.08), transparent 70%); }
+    .area-card.print:active { border-color: rgba(255,159,64,0.25); }
+
+    .area-card.leads::before { background: var(--pink); }
+    .area-card.leads::after { background: radial-gradient(circle, rgba(255,92,135,0.08), transparent 70%); }
+    .area-card.leads:active { border-color: rgba(255,92,135,0.25); }
+
+    /* Card content */
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card-icon-wrap {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .strategy .card-icon-wrap { background: rgba(0,229,122,0.1); border: 1px solid rgba(0,229,122,0.15); }
+    .creative .card-icon-wrap { background: rgba(79,140,255,0.1); border: 1px solid rgba(79,140,255,0.15); }
+    .automation .card-icon-wrap { background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.15); }
+    .print .card-icon-wrap { background: rgba(255,159,64,0.1); border: 1px solid rgba(255,159,64,0.15); }
+    .leads .card-icon-wrap { background: rgba(255,92,135,0.1); border: 1px solid rgba(255,92,135,0.15); }
+
+    .card-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 9px;
+      border-radius: 999px;
+    }
+    .strategy .card-badge { color: var(--green); background: rgba(0,229,122,0.08); border: 1px solid rgba(0,229,122,0.15); }
+    .creative .card-badge { color: var(--accent1); background: rgba(79,140,255,0.08); border: 1px solid rgba(79,140,255,0.15); }
+    .automation .card-badge { color: var(--cyan); background: rgba(0,217,255,0.08); border: 1px solid rgba(0,217,255,0.15); }
+    .print .card-badge { color: var(--orange); background: rgba(255,159,64,0.08); border: 1px solid rgba(255,159,64,0.15); }
+    .leads .card-badge { color: var(--pink); background: rgba(255,92,135,0.08); border: 1px solid rgba(255,92,135,0.15); }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .card-desc {
+      color: var(--muted2);
+      font-size: 13.5px;
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    /* Feature list */
+    .card-features {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 20px;
+    }
+
+    .card-feature {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: var(--muted2);
+    }
+
+    .feature-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .strategy .feature-dot { background: var(--green); }
+    .creative .feature-dot { background: var(--accent1); }
+    .automation .feature-dot { background: var(--cyan); }
+    .print .feature-dot { background: var(--orange); }
+    .leads .feature-dot { background: var(--pink); }
+
+    /* Card divider */
+    .card-divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+    /* Card CTA */
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      justify-content: center;
+    }
+    .strategy .card-cta { background: rgba(0,229,122,0.12); color: var(--green); border: 1px solid rgba(0,229,122,0.2); }
+    .creative .card-cta { background: rgba(79,140,255,0.12); color: var(--accent1); border: 1px solid rgba(79,140,255,0.2); }
+    .automation .card-cta { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid rgba(0,217,255,0.18); }
+    .print .card-cta { background: rgba(255,159,64,0.1); color: var(--orange); border: 1px solid rgba(255,159,64,0.18); }
+    .leads .card-cta { background: rgba(255,92,135,0.1); color: var(--pink); border: 1px solid rgba(255,92,135,0.18); }
+
+    /* ══════════════════════════════════════════
+       ─── CTA SECTION ───
+    ══════════════════════════════════════════ */
+    .cta-section {
+      position: relative;
+      z-index: 1;
+      padding: 0 18px calc(80px + var(--safe-bottom));
+    }
+
+    .cta-block {
+      background: linear-gradient(135deg, rgba(79,140,255,0.07), rgba(123,97,255,0.04));
+      border: 1px solid rgba(79,140,255,0.12);
+      border-radius: 20px;
+      padding: 32px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-block::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,97,255,0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent1);
+      margin-bottom: 10px;
+    }
+
+    .cta-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .cta-title span {
+      background: linear-gradient(105deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .cta-sub { color: var(--muted2); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-wa {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: rgba(37,211,102,0.12);
+      border: 1px solid rgba(37,211,102,0.22);
+      border-radius: var(--radius-sm);
+      color: #25d366;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    /* ─── FLOATING WA ─── */
+    .fab-wa {
+      position: fixed;
+      bottom: calc(22px + var(--safe-bottom));
+      right: 18px;
+      z-index: 700;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 28px rgba(37,211,102,0.4);
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .fab-wa:active { transform: scale(0.94); }
+
+    /* ══════════════════════════════════════════
+       ─── MODAL SYSTEM ───
+    ══════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(4, 6, 15, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-height: 92dvh;
+      background: #0b0d17;
+      border-radius: 24px 24px 0 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      transform: translateY(60px);
+      transition: transform 0.4s cubic-bezier(.16,.84,.44,1);
+      position: relative;
+      scrollbar-width: none;
+    }
+    .modal-sheet::-webkit-scrollbar { display: none; }
+    .modal-overlay.active .modal-sheet { transform: translateY(0); }
+
+    /* Modal drag handle */
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 3px;
+      margin: 12px auto 0;
+      flex-shrink: 0;
+    }
+
+    /* Modal close */
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      z-index: 10;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted2);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── Modal Hero ── */
+    .modal-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 20px 20px 28px;
+    }
+
+    .modal-hero-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    .modal-hero-content { position: relative; z-index: 2; }
+
+    .modal-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .modal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .modal-tag {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 7vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.05;
+      margin-bottom: 10px;
+    }
+
+    .modal-subtitle {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--muted2);
+      margin-bottom: 22px;
+    }
+
+    .modal-hero-metrics {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .metric-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .metric-lbl { font-size: 10px; color: var(--muted); font-weight: 600; }
+
+    /* ── Modal Body ── */
+    .modal-divider { height: 1px; background: var(--border); margin: 0 20px; }
+
+    .modal-body { padding: 0 20px calc(24px + var(--safe-bottom)); }
+
+    .modal-section { padding: 28px 0 0; }
+
+    .modal-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .modal-section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      margin-bottom: 20px;
+    }
+
+    /* Services grid — 2 col on mobile */
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .service-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 14px;
+    }
+
+    .service-icon { font-size: 18px; margin-bottom: 8px; display: block; }
+    .service-name { font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; line-height: 1.2; }
+    .service-desc { font-size: 11.5px; color: var(--muted); line-height: 1.55; }
+
+    /* Process steps — vertical on mobile */
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .process-steps::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      bottom: 24px;
+      left: 23px;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 0 0 20px 0;
+      position: relative;
+    }
+    .step:last-child { padding-bottom: 0; }
+
+    .step-num {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-content { flex: 1; padding-top: 12px; }
+    .step-label { font-size: 13px; font-weight: 700; color: var(--muted2); margin-bottom: 3px; }
+    .step-sub { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    /* For-who section */
+    .forwho-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .forwho-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .forwho-check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .forwho-text { font-size: 13px; color: var(--muted2); line-height: 1.5; }
+
+    /* CTA bar at bottom of modal */
+    .modal-cta-bar {
+      margin-top: 28px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 22px 18px;
+    }
+
+    .modal-cta-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .modal-cta-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+    .modal-cta-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .btn-modal-wa {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 20px;
+      background: rgba(37,211,102,0.12);
+      border: 1px solid rgba(37,211,102,0.22);
+      border-radius: 10px;
+      color: #25d366;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .btn-modal-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      width: 100%;
+      color: #fff;
+    }
+
+    /* ── Color-specific modal styling ── */
+    #modal-strategy .modal-badge { background: rgba(0,229,122,0.1); color: var(--green); border: 1px solid rgba(0,229,122,0.2); }
+    #modal-strategy .metric-val { color: var(--green); }
+    #modal-strategy .step-num { border-color: rgba(0,229,122,0.35); color: var(--green); }
+    #modal-strategy .forwho-check { background: rgba(0,229,122,0.12); color: var(--green); }
+    #modal-strategy .btn-modal-primary { background: linear-gradient(135deg,#00e57a,#00b85c); }
+
+    #modal-creative .modal-badge { background: rgba(79,140,255,0.1); color: var(--accent1); border: 1px solid rgba(79,140,255,0.2); }
+    #modal-creative .metric-val { background: linear-gradient(90deg,var(--accent1),var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #modal-creative .step-num { border-color: rgba(79,140,255,0.35); color: var(--accent1); }
+    #modal-creative .forwho-check { background: rgba(79,140,255,0.12); color: var(--accent1); }
+    #modal-creative .btn-modal-primary { background: linear-gradient(135deg,var(--accent1),var(--accent2)); }
+
+    #modal-automation .modal-badge { background: rgba(0,217,255,0.1); color: var(--cyan); border: 1px solid rgba(0,217,255,0.2); }
+    #modal-automation .metric-val { color: var(--cyan); }
+    #modal-automation .step-num { border-color: rgba(0,217,255,0.35); color: var(--cyan); }
+    #modal-automation .forwho-check { background: rgba(0,217,255,0.12); color: var(--cyan); }
+    #modal-automation .btn-modal-primary { background: linear-gradient(135deg,#00d9ff,#0099cc); }
+
+    #modal-print .modal-badge { background: rgba(255,159,64,0.1); color: var(--orange); border: 1px solid rgba(255,159,64,0.2); }
+    #modal-print .metric-val { color: var(--orange); }
+    #modal-print .step-num { border-color: rgba(255,159,64,0.35); color: var(--orange); }
+    #modal-print .forwho-check { background: rgba(255,159,64,0.12); color: var(--orange); }
+    #modal-print .btn-modal-primary { background: linear-gradient(135deg,#ff9f40,#e07000); }
+
+    #modal-leads .modal-badge { background: rgba(255,92,135,0.1); color: var(--pink); border: 1px solid rgba(255,92,135,0.2); }
+    #modal-leads .metric-val { color: var(--pink); }
+    #modal-leads .step-num { border-color: rgba(255,92,135,0.35); color: var(--pink); }
+    #modal-leads .forwho-check { background: rgba(255,92,135,0.12); color: var(--pink); }
+    #modal-leads .btn-modal-primary { background: linear-gradient(135deg,#ff5c87,#cc2255); }
+
+    /* Extra small screens */
+    @media (max-width: 360px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- FLOATING WA -->
+<a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20información%20sobre%20las%20áreas%20específicas" class="fab-wa" target="_blank" aria-label="WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER MENU -->
+<nav class="drawer" id="drawerMenu" role="navigation" aria-label="Menú principal">
+  <a href="index.html">🏠 Inicio</a>
+  <a href="catalogo-kairo.html">📖 Catálogo</a>
+  <a href="index.html#planes">💎 Planes</a>
+  <div class="drawer-divider"></div>
+  <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20asesoría" class="drawer-cta" target="_blank">Agendar ahora →</a>
+</nav>
+
+<!-- HEADER -->
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <img src="../kairo-icon.png" alt="Khairo">
+      <div class="meta">
+        <div class="title">Khairo</div>
+        <div class="sub">Growth Systems</div>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20asesoría" class="nav-cta-btn" target="_blank">Agendar →</a>
+      <button class="hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Khairo · Especialidades</div>
+  <h1>Cada área,<br>un <span class="grad">sistema</span><br>de resultados.</h1>
+  <p class="hero-desc">No somos una agencia que hace de todo sin profundidad. Cada división de Khairo tiene metodología propia, herramientas específicas y un objetivo claro: hacer crecer tu negocio de forma medible.</p>
+  <div class="hero-cta-row">
+    <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20asesoría%20sobre%20áreas%20específicas" class="btn btn-primary" target="_blank">Hablar con un asesor →</a>
+    <a href="index.html#planes" class="btn btn-ghost">Ver planes</a>
+  </div>
+  <div class="hero-stats-mini">
+    <div class="hero-stat-mini">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Divisiones especializadas</div>
+    </div>
+    <div class="hero-stat-mini">
+      <div class="stat-num">+110%</div>
+      <div class="stat-label">ROAS promedio</div>
+    </div>
+    <div class="hero-stat-mini">
+      <div class="stat-num">30d</div>
+      <div class="stat-label">Primeros resultados</div>
+    </div>
+    <div class="hero-stat-mini">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">A medida de tu negocio</div>
+    </div>
+    <div class="hero-stat-mini wide">
+      <div class="stat-icon">🧠</div>
+      <div class="stat-text">
+        <div class="stat-title">IA integrada en cada área</div>
+        <div class="stat-sub">Khairo IA diagnostica y recomienda en tiempo real</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AREAS -->
+<div class="section-wrap">
+  <div class="section-header">
+    <div class="section-header-left">
+      <h2>Nuestras divisiones especializadas</h2>
+      <p>Cada área tiene metodología y objetivos propios.</p>
+    </div>
+    <div class="section-count">05</div>
+  </div>
+
+  <div class="areas-grid">
+
+    <!-- STRATEGY -->
+    <div class="area-card strategy">
+      <div class="card-top">
+        <div class="card-icon-wrap">🟢</div>
+        <span class="card-badge">Strategy</span>
+      </div>
+      <div class="card-title">Khairo Strategy</div>
+      <div class="card-desc">Inteligencia comercial y crecimiento con apoyo de IA. Convertimos datos e insights en decisiones que mueven el negocio.</div>
+      <div class="card-features">
+        <div class="card-feature"><div class="feature-dot"></div>Diagnóstico profundo del negocio</div>
+        <div class="card-feature"><div class="feature-dot"></div>Estrategia de crecimiento y campañas</div>
+        <div class="card-feature"><div class="feature-dot"></div>Análisis de clientes y competencia</div>
+        <div class="card-feature"><div class="feature-dot"></div>Ideas de marketing accionables</div>
+        <div class="card-feature"><div class="feature-dot"></div>Insights y reportes generados con IA</div>
+      </div>
+      <div class="card-divider"></div>
+      <button class="card-cta" onclick="openModal('strategy')">Explorar Khairo Strategy →</button>
+    </div>
+
+    <!-- CREATIVE -->
+    <div class="area-card creative">
+      <div class="card-top">
+        <div class="card-icon-wrap">🎨</div>
+        <span class="card-badge">Creative</span>
+      </div>
+      <div class="card-title">Khairo Creative</div>
+      <div class="card-desc">Diseño y contenido que hacen que tu marca destaque donde más importa. Visualmente impactante, estratégicamente calculado.</div>
+      <div class="card-features">
+        <div class="card-feature"><div class="feature-dot"></div>Diseño de contenido para redes sociales</div>
+        <div class="card-feature"><div class="feature-dot"></div>Branding visual y guías de marca</div>
+        <div class="card-feature"><div class="feature-dot"></div>Videos promocionales y reels</div>
+        <div class="card-feature"><div class="feature-dot"></div>Flyers, posters, banners y menús</div>
+        <div class="card-feature"><div class="feature-dot"></div>Material publicitario digital e impreso</div>
+      </div>
+      <div class="card-divider"></div>
+      <button class="card-cta" onclick="openModal('creative')">Explorar Khairo Creative →</button>
+    </div>
+
+    <!-- AUTOMATION -->
+    <div class="area-card automation">
+      <div class="card-top">
+        <div class="card-icon-wrap">🤖</div>
+        <span class="card-badge">Automation</span>
+      </div>
+      <div class="card-title">Khairo Automation</div>
+      <div class="card-desc">Automatiza atención, ventas y procesos internos para que tu negocio opere más rápido y con menos fricción.</div>
+      <div class="card-features">
+        <div class="card-feature"><div class="feature-dot"></div>Respuestas automáticas y chat flows</div>
+        <div class="card-feature"><div class="feature-dot"></div>Formularios de captura y pipelines</div>
+        <div class="card-feature"><div class="feature-dot"></div>Integración WhatsApp, web y redes</div>
+        <div class="card-feature"><div class="feature-dot"></div>Flujos de venta automatizados</div>
+        <div class="card-feature"><div class="feature-dot"></div>Optimización de procesos con IA</div>
+      </div>
+      <div class="card-divider"></div>
+      <button class="card-cta" onclick="openModal('automation')">Explorar Khairo Automation →</button>
+    </div>
+
+    <!-- PRINT -->
+    <div class="area-card print">
+      <div class="card-top">
+        <div class="card-icon-wrap">🖨️</div>
+        <span class="card-badge">Print & Offline</span>
+      </div>
+      <div class="card-title">Khairo Print</div>
+      <div class="card-desc">Presencia física que refuerza tu marca en el mundo real. Materiales impresos con el mismo nivel de calidad que lo digital.</div>
+      <div class="card-features">
+        <div class="card-feature"><div class="feature-dot"></div>Volantes y flyers para distribución</div>
+        <div class="card-feature"><div class="feature-dot"></div>Tarjetas de presentación profesionales</div>
+        <div class="card-feature"><div class="feature-dot"></div>Pancartas y vallas publicitarias</div>
+        <div class="card-feature"><div class="feature-dot"></div>Menús físicos y carta de restaurantes</div>
+        <div class="card-feature"><div class="feature-dot"></div>Material POP y merchandising de marca</div>
+      </div>
+      <div class="card-divider"></div>
+      <button class="card-cta" onclick="openModal('print')">Explorar Khairo Print →</button>
+    </div>
+
+    <!-- LEADS -->
+    <div class="area-card leads">
+      <div class="card-top">
+        <div class="card-icon-wrap">🎯</div>
+        <span class="card-badge">Leads</span>
+      </div>
+      <div class="card-title">Khairo Leads</div>
+      <div class="card-desc">Captación, calificación y conversión de clientes potenciales con campañas pagas y embudos diseñados para vender. Más prospectos reales, menos ruido.</div>
+      <div class="card-features">
+        <div class="card-feature"><div class="feature-dot"></div>Campañas de Meta Ads y Google Ads</div>
+        <div class="card-feature"><div class="feature-dot"></div>Landing pages de alta conversión</div>
+        <div class="card-feature"><div class="feature-dot"></div>Segmentación y filtrado de audiencias</div>
+        <div class="card-feature"><div class="feature-dot"></div>Embudos de captación automatizados</div>
+        <div class="card-feature"><div class="feature-dot"></div>CRM y seguimiento de prospectos</div>
+        <div class="card-feature"><div class="feature-dot"></div>Reportes de rendimiento y ROAS</div>
+      </div>
+      <div class="card-divider"></div>
+      <button class="card-cta" onclick="openModal('leads')">Explorar Khairo Leads →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- CTA FINAL -->
+<div class="cta-section">
+  <div class="cta-block">
+    <div class="cta-eyebrow">¿Listo para escalar?</div>
+    <div class="cta-title">No sé por dónde empezar —<br><span>la IA de Khairo te dice cuál área necesitas.</span></div>
+    <div class="cta-sub">Responde 5 preguntas rápidas y Khairo IA diagnostica tu negocio, detecta los cuellos de botella y te recomienda por dónde atacar primero.</div>
+    <div class="cta-actions">
+      <a href="index.html" class="btn btn-primary">Usar Khairo IA 🧠</a>
+      <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20asesoría%20personalizada" class="btn-wa" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp directo
+      </a>
+      <a href="index.html#planes" class="btn btn-ghost">Ver planes →</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL: KHAIRO STRATEGY
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-strategy" role="dialog" aria-modal="true" aria-label="Khairo Strategy" aria-hidden="true">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('strategy')" aria-label="Cerrar">✕</button>
+
+    <div class="modal-hero" style="background: linear-gradient(135deg, rgba(0,229,122,0.06) 0%, rgba(0,180,80,0.02) 100%);">
+      <svg class="modal-hero-bg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="360" cy="40" r="120" fill="none" stroke="rgba(0,229,122,0.07)" stroke-width="1"/>
+        <circle cx="360" cy="40" r="60" fill="none" stroke="rgba(0,229,122,0.05)" stroke-width="1"/>
+        <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(0,229,122,0.05)" stroke-width="1"/>
+      </svg>
+      <div class="modal-hero-content">
+        <div class="modal-badge-row">
+          <span class="modal-badge">🟢 Strategy</span>
+          <span class="modal-tag">División · Khairo</span>
+        </div>
+        <h2 class="modal-title">Khairo <span style="color:#00e57a;">Strategy</span></h2>
+        <p class="modal-subtitle">Inteligencia comercial y crecimiento con apoyo de IA. Convertimos datos, insights y análisis profundos en decisiones claras que mueven tu negocio hacia adelante.</p>
+        <div class="modal-hero-metrics">
+          <div class="metric-item">
+            <div class="metric-val">+110%</div>
+            <div class="metric-lbl">ROAS promedio</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val">5 días</div>
+            <div class="metric-lbl">Plan estratégico listo</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val">100%</div>
+            <div class="metric-lbl">Personalizado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-label">Lo que hacemos</div>
+        <div class="modal-section-title">Servicios de <span style="color:#00e57a;">Strategy</span></div>
+        <div class="services-grid">
+          <div class="service-card">
+            <span class="service-icon">🔍</span>
+            <div class="service-name">Diagnóstico Profundo</div>
+            <div class="service-desc">Auditoría completa de tu negocio, canales y puntos ciegos que frenan el crecimiento.</div>
+          </div>
+          <div class="service-card">
+            <span class="service-icon">🗺️</span>
+            <div class="service-name">Mapa de Crecimiento</div>
+            <div class="service-desc">Plan estratégico por fases con objetivos medibles y acciones concretas.</div>
+          </div>
+          <div class="service-card">
+            <span class="service-icon">📊</span>
+            <div class="service-name">Análisis de Mercado</div>
+            <div class="service-desc">Investigación de competidores, audiencias y oportunidades de posicionamiento.</div>
+          </div>
+          <div class="service-card">
+            <span class="service-icon">🧠</span>
+            <div class="service-name">Marketing Intelligence</div>
+            <div class="service-desc">Dashboards con IA para monitorear KPIs y detectar alertas en tiempo real.</div>
+          </div>
+          <div class="service-card">
+            <span class="service-icon">📈</span>
+            <div class="service-name">Estrategia de Campañas</div>
+            <div class="service-desc">Campañas integrales que conectan canales pagos, orgánicos y contenido.</div>
+          </div>
+          <div class="service-card">
+            <span class="service-icon">📋</span>
+            <div class="service-name">Reportes Estratégicos</div>
+            <div class="service-desc">Informes con IA que traducen datos en insights accionables y próximos pasos.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">Metodología</div>
+        <div class="modal-section-title">Cómo trabajamos</div>
+        <div class="process-steps">
+          <div class="step"><div class="step-num">01</div><div class="step-content"><div class="step-label">Auditoría</div><div class="step-sub">Analizamos tu negocio desde adentro: canales, métricas, oferta y mercado.</div></div></div>
+          <div class="step"><div class="step-num">02</div><div class="step-content"><div class="step-label">Diagnóstico</div><div class="step-sub">Identificamos cuellos de botella, oportunidades y prioridades reales.</div></div></div>
+          <div class="step"><div class="step-num">03</div><div class="step-content"><div class="step-label">Estrategia</div><div class="step-sub">Diseñamos el plan de crecimiento con KPIs, tiempos y acciones concretas.</div></div></div>
+          <div class="step"><div class="step-num">04</div><div class="step-content"><div class="step-label">Ejecución</div><div class="step-sub">Activamos cada iniciativa con las áreas correctas de Khairo.</div></div></div>
+          <div class="step"><div class="step-num">05</div><div class="step-content"><div class="step-label">Optimización</div><div class="step-sub">Medimos, ajustamos y escalamos lo que está funcionando.</div></div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">¿Es para ti?</div>
+        <div class="modal-section-title">Khairo Strategy es ideal si...</div>
+        <div class="forwho-grid">
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Sientes que inviertes en marketing pero no ves resultados claros ni medibles.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Tu negocio crece lento y no sabes exactamente por dónde atacar primero.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Quieres tomar decisiones con datos reales, no con intuición ni corazonadas.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Necesitas un plan de acción claro para los próximos 90 días de tu negocio.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-cta-bar">
+        <div class="modal-cta-heading">¿Listo para tomar decisiones con datos?</div>
+        <div class="modal-cta-sub">Agenda una sesión de diagnóstico gratuita — sin compromiso, con claridad total.</div>
+        <div class="modal-cta-btns">
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20saber%20más%20sobre%20Khairo%20Strategy" class="btn-modal-wa" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20una%20sesión%20de%20diagnóstico%20de%20Strategy" class="btn-modal-primary" target="_blank">Agendar diagnóstico →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL: KHAIRO CREATIVE
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-creative" role="dialog" aria-modal="true" aria-label="Khairo Creative" aria-hidden="true">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('creative')" aria-label="Cerrar">✕</button>
+
+    <div class="modal-hero" style="background: linear-gradient(135deg, rgba(79,140,255,0.07) 0%, rgba(123,97,255,0.04) 100%);">
+      <svg class="modal-hero-bg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="360" cy="30" r="150" fill="none" stroke="rgba(79,140,255,0.06)" stroke-width="1"/>
+        <circle cx="360" cy="30" r="80" fill="none" stroke="rgba(123,97,255,0.05)" stroke-width="1"/>
+        <line x1="0" y1="150" x2="400" y2="150" stroke="rgba(79,140,255,0.04)" stroke-width="1"/>
+      </svg>
+      <div class="modal-hero-content">
+        <div class="modal-badge-row">
+          <span class="modal-badge">🎨 Creative</span>
+          <span class="modal-tag">División · Khairo</span>
+        </div>
+        <h2 class="modal-title">Khairo <span style="background:linear-gradient(90deg,#4f8cff,#7b61ff);-webkit-background-clip:text;background-clip:text;color:transparent;">Creative</span></h2>
+        <p class="modal-subtitle">Tu marca, vista y sentida donde más importa. Diseño y contenido visualmente impactante, estratégicamente calculado para generar impresión, conexión y conversión.</p>
+        <div class="modal-hero-metrics">
+          <div class="metric-item"><div class="metric-val">+3x</div><div class="metric-lbl">Engagement</div></div>
+          <div class="metric-item"><div class="metric-val">48h</div><div class="metric-lbl">Entrega express</div></div>
+          <div class="metric-item"><div class="metric-val">5+</div><div class="metric-lbl">Formatos por entrega</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-label">Lo que hacemos</div>
+        <div class="modal-section-title">Servicios de <span style="background:linear-gradient(90deg,#4f8cff,#7b61ff);-webkit-background-clip:text;background-clip:text;color:transparent;">Creative</span></div>
+        <div class="services-grid">
+          <div class="service-card"><span class="service-icon">📱</span><div class="service-name">Contenido para Redes</div><div class="service-desc">Posts, stories, carrouseles y reels por plataforma.</div></div>
+          <div class="service-card"><span class="service-icon">🎯</span><div class="service-name">Identidad Visual</div><div class="service-desc">Logo, paleta, tipografías y guía de marca completa.</div></div>
+          <div class="service-card"><span class="service-icon">🎬</span><div class="service-name">Video & Motion</div><div class="service-desc">Reels, videos promocionales y animaciones para campañas.</div></div>
+          <div class="service-card"><span class="service-icon">🖼️</span><div class="service-name">Banners & Publicidad</div><div class="service-desc">Banners digitales y materiales para Meta Ads y Google.</div></div>
+          <div class="service-card"><span class="service-icon">🍽️</span><div class="service-name">Menús & Cartas</div><div class="service-desc">Diseño de menús digitales e impresos para negocios.</div></div>
+          <div class="service-card"><span class="service-icon">✨</span><div class="service-name">Piezas Especiales</div><div class="service-desc">Presentaciones, catálogos y piezas creativas a medida.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">Metodología</div>
+        <div class="modal-section-title">Nuestro proceso creativo</div>
+        <div class="process-steps">
+          <div class="step"><div class="step-num">01</div><div class="step-content"><div class="step-label">Briefing</div><div class="step-sub">Entendemos tu marca, objetivos, audiencia y referentes visuales.</div></div></div>
+          <div class="step"><div class="step-num">02</div><div class="step-content"><div class="step-label">Concepto</div><div class="step-sub">Definimos dirección creativa, estética y mensajes clave.</div></div></div>
+          <div class="step"><div class="step-num">03</div><div class="step-content"><div class="step-label">Propuesta</div><div class="step-sub">Presentamos las piezas iniciales para tu revisión y feedback.</div></div></div>
+          <div class="step"><div class="step-num">04</div><div class="step-content"><div class="step-label">Ajustes</div><div class="step-sub">Refinamos hasta que cada detalle esté exactamente como lo quieres.</div></div></div>
+          <div class="step"><div class="step-num">05</div><div class="step-content"><div class="step-label">Entrega</div><div class="step-sub">Archivos listos en todos los formatos y plataformas necesarias.</div></div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">¿Es para ti?</div>
+        <div class="modal-section-title">Khairo Creative es ideal si...</div>
+        <div class="forwho-grid">
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Tu marca no tiene una identidad visual clara o consistente en redes sociales.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Publicas contenido pero no genera la interacción ni el alcance que esperas.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Quieres lanzar tu marca con una imagen profesional y diferenciada.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Necesitas contenido de calidad de forma constante sin depender de freelancers.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-cta-bar">
+        <div class="modal-cta-heading">¿Tu marca merece verse diferente?</div>
+        <div class="modal-cta-sub">Cuéntanos tu proyecto — te respondemos en menos de 24 horas con una propuesta.</div>
+        <div class="modal-cta-btns">
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20saber%20más%20sobre%20Khairo%20Creative" class="btn-modal-wa" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20cotizar%20diseño%20para%20mi%20marca" class="btn-modal-primary" target="_blank">Cotizar diseño →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL: KHAIRO AUTOMATION
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-automation" role="dialog" aria-modal="true" aria-label="Khairo Automation" aria-hidden="true">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('automation')" aria-label="Cerrar">✕</button>
+
+    <div class="modal-hero" style="background: linear-gradient(135deg, rgba(0,217,255,0.06) 0%, rgba(0,150,200,0.02) 100%);">
+      <svg class="modal-hero-bg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="80" x2="150" y2="80" stroke="rgba(0,217,255,0.08)" stroke-width="1"/>
+        <line x1="150" y1="80" x2="150" y2="160" stroke="rgba(0,217,255,0.08)" stroke-width="1"/>
+        <circle cx="150" cy="80" r="3" fill="rgba(0,217,255,0.25)"/>
+        <circle cx="350" cy="40" r="3" fill="rgba(0,217,255,0.2)"/>
+        <line x1="350" y1="40" x2="400" y2="40" stroke="rgba(0,217,255,0.06)" stroke-width="1"/>
+      </svg>
+      <div class="modal-hero-content">
+        <div class="modal-badge-row">
+          <span class="modal-badge">🤖 Automation</span>
+          <span class="modal-tag">División · Khairo</span>
+        </div>
+        <h2 class="modal-title">Khairo <span style="color:#00d9ff;">Automation</span></h2>
+        <p class="modal-subtitle">Tu negocio trabajando 24/7, sin fricción, sin demoras. Automatizamos atención, ventas y procesos para que tú y tu equipo se enfoquen en lo que realmente importa.</p>
+        <div class="modal-hero-metrics">
+          <div class="metric-item"><div class="metric-val">−80%</div><div class="metric-lbl">Atención manual</div></div>
+          <div class="metric-item"><div class="metric-val">+60%</div><div class="metric-lbl">Conversión</div></div>
+          <div class="metric-item"><div class="metric-val">24/7</div><div class="metric-lbl">Atención activa</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-label">Lo que hacemos</div>
+        <div class="modal-section-title">Servicios de <span style="color:#00d9ff;">Automation</span></div>
+        <div class="services-grid">
+          <div class="service-card"><span class="service-icon">💬</span><div class="service-name">Chat Flows WhatsApp</div><div class="service-desc">Respuestas automáticas que califican y guían al cliente hacia la venta.</div></div>
+          <div class="service-card"><span class="service-icon">🔄</span><div class="service-name">Pipelines de Venta</div><div class="service-desc">CRM que captura y hace seguimiento de cada prospecto en tiempo real.</div></div>
+          <div class="service-card"><span class="service-icon">🔗</span><div class="service-name">Integración Multi-canal</div><div class="service-desc">WhatsApp, Instagram, web y email en un solo sistema unificado.</div></div>
+          <div class="service-card"><span class="service-icon">🎯</span><div class="service-name">Flujos de Onboarding</div><div class="service-desc">Bienvenida automática de nuevos clientes con secuencias programadas.</div></div>
+          <div class="service-card"><span class="service-icon">🧠</span><div class="service-name">Bots con IA</div><div class="service-desc">Asistentes que responden, agendan citas y generan ventas con IA.</div></div>
+          <div class="service-card"><span class="service-icon">⚡</span><div class="service-name">Automatización Interna</div><div class="service-desc">Reportes, notificaciones y flujos de trabajo internos optimizados.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">Metodología</div>
+        <div class="modal-section-title">De cero a automatizado</div>
+        <div class="process-steps">
+          <div class="step"><div class="step-num">01</div><div class="step-content"><div class="step-label">Mapeo</div><div class="step-sub">Analizamos tus procesos e identificamos dónde se pierden leads y tiempo.</div></div></div>
+          <div class="step"><div class="step-num">02</div><div class="step-content"><div class="step-label">Diseño</div><div class="step-sub">Creamos los flujos de automatización y la lógica de respuesta personalizada.</div></div></div>
+          <div class="step"><div class="step-num">03</div><div class="step-content"><div class="step-label">Integración</div><div class="step-sub">Conectamos todas tus plataformas y canales en el sistema automatizado.</div></div></div>
+          <div class="step"><div class="step-num">04</div><div class="step-content"><div class="step-label">Pruebas</div><div class="step-sub">Probamos cada flujo con casos reales para asegurar que funcione perfecto.</div></div></div>
+          <div class="step"><div class="step-num">05</div><div class="step-content"><div class="step-label">Activación</div><div class="step-sub">Lanzamos, monitoreamos y optimizamos según los resultados reales.</div></div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">¿Es para ti?</div>
+        <div class="modal-section-title">Khairo Automation es ideal si...</div>
+        <div class="forwho-grid">
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Pierdes clientes porque demoras en responder o no das seguimiento.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Tu equipo dedica demasiado tiempo a tareas repetitivas que podrían automatizarse.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Quieres que tu negocio funcione y venda incluso fuera del horario laboral.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Tienes múltiples canales de comunicación y no los puedes gestionar todos bien.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-cta-bar">
+        <div class="modal-cta-heading">¿Listo para que tu negocio trabaje 24/7?</div>
+        <div class="modal-cta-sub">Cuéntanos tus procesos y te mostramos exactamente qué se puede automatizar.</div>
+        <div class="modal-cta-btns">
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20saber%20más%20sobre%20Khairo%20Automation" class="btn-modal-wa" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20automatizar%20mi%20negocio" class="btn-modal-primary" target="_blank">Automatizar ahora →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL: KHAIRO PRINT
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-print" role="dialog" aria-modal="true" aria-label="Khairo Print" aria-hidden="true">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('print')" aria-label="Cerrar">✕</button>
+
+    <div class="modal-hero" style="background: linear-gradient(135deg, rgba(255,159,64,0.07) 0%, rgba(200,100,0,0.02) 100%);">
+      <svg class="modal-hero-bg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <rect x="300" y="10" width="120" height="90" rx="6" fill="none" stroke="rgba(255,159,64,0.07)" stroke-width="1"/>
+        <line x1="0" y1="170" x2="400" y2="170" stroke="rgba(255,159,64,0.05)" stroke-width="1"/>
+      </svg>
+      <div class="modal-hero-content">
+        <div class="modal-badge-row">
+          <span class="modal-badge">🖨️ Print & Offline</span>
+          <span class="modal-tag">División · Khairo</span>
+        </div>
+        <h2 class="modal-title">Khairo <span style="color:#ff9f40;">Print</span></h2>
+        <p class="modal-subtitle">Presencia física que refuerza tu marca en el mundo real. Materiales impresos con el mismo estándar de calidad que tu presencia digital — porque el offline también vende.</p>
+        <div class="modal-hero-metrics">
+          <div class="metric-item"><div class="metric-val">48h</div><div class="metric-lbl">Entrega de archivos</div></div>
+          <div class="metric-item"><div class="metric-val">300 dpi</div><div class="metric-lbl">Listo para imprenta</div></div>
+          <div class="metric-item"><div class="metric-val">+10</div><div class="metric-lbl">Tipos de formatos</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-label">Lo que hacemos</div>
+        <div class="modal-section-title">Servicios de <span style="color:#ff9f40;">Print</span></div>
+        <div class="services-grid">
+          <div class="service-card"><span class="service-icon">📄</span><div class="service-name">Volantes & Flyers</div><div class="service-desc">Diseño de alta conversión para distribución física con CTA poderoso.</div></div>
+          <div class="service-card"><span class="service-icon">💼</span><div class="service-name">Tarjetas de Presentación</div><div class="service-desc">Tarjetas profesionales con QR integrado y diseño memorable.</div></div>
+          <div class="service-card"><span class="service-icon">🏗️</span><div class="service-name">Pancartas & Vallas</div><div class="service-desc">Formatos grandes para visibilidad en calle, eventos y ferias.</div></div>
+          <div class="service-card"><span class="service-icon">🍽️</span><div class="service-name">Menús Físicos</div><div class="service-desc">Cartas impresas para restaurantes con diseño gourmet y precios claros.</div></div>
+          <div class="service-card"><span class="service-icon">🏪</span><div class="service-name">Material POP</div><div class="service-desc">Roll-ups, pendones y material de punto de venta para tu marca en tienda.</div></div>
+          <div class="service-card"><span class="service-icon">🎁</span><div class="service-name">Merchandising</div><div class="service-desc">Etiquetas, empaques, stickers y más elementos de marca física.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">Metodología</div>
+        <div class="modal-section-title">Del concepto a la imprenta</div>
+        <div class="process-steps">
+          <div class="step"><div class="step-num">01</div><div class="step-content"><div class="step-label">Briefing</div><div class="step-sub">Recopilamos tu información, objetivo y referentes visuales para el material.</div></div></div>
+          <div class="step"><div class="step-num">02</div><div class="step-content"><div class="step-label">Diseño</div><div class="step-sub">Creamos el arte con la identidad de tu marca y principios de diseño premium.</div></div></div>
+          <div class="step"><div class="step-num">03</div><div class="step-content"><div class="step-label">Aprobación</div><div class="step-sub">Presentamos y ajustamos hasta que el resultado sea exactamente el que necesitas.</div></div></div>
+          <div class="step"><div class="step-num">04</div><div class="step-content"><div class="step-label">Pre-prensa</div><div class="step-sub">Preparamos el archivo en los parámetros técnicos: sangrado, resolución y CMYK.</div></div></div>
+          <div class="step"><div class="step-num">05</div><div class="step-content"><div class="step-label">Entrega</div><div class="step-sub">Recibes los archivos listos para imprimir en cualquier imprenta del país.</div></div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">¿Es para ti?</div>
+        <div class="modal-section-title">Khairo Print es ideal si...</div>
+        <div class="forwho-grid">
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Tienes presencia digital pero no en el mundo físico donde está tu cliente.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Usas materiales impresos de baja calidad que no representan tu marca bien.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Quieres impactar en eventos, ferias o puntos de venta con material premium.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Necesitas unificar tu identidad visual entre el mundo digital y el físico.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-cta-bar">
+        <div class="modal-cta-heading">¿Listo para tener presencia física de alto nivel?</div>
+        <div class="modal-cta-sub">Cuéntanos qué materiales necesitas y te enviamos una cotización rápida.</div>
+        <div class="modal-cta-btns">
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20saber%20más%20sobre%20Khairo%20Print" class="btn-modal-wa" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20cotizar%20material%20impreso" class="btn-modal-primary" target="_blank">Cotizar materiales →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL: KHAIRO LEADS
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-leads" role="dialog" aria-modal="true" aria-label="Khairo Leads" aria-hidden="true">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('leads')" aria-label="Cerrar">✕</button>
+
+    <div class="modal-hero" style="background: linear-gradient(135deg, rgba(255,92,135,0.07) 0%, rgba(180,30,70,0.02) 100%);">
+      <svg class="modal-hero-bg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="360" cy="50" r="120" fill="none" stroke="rgba(255,92,135,0.07)" stroke-width="1"/>
+        <circle cx="360" cy="50" r="60" fill="none" stroke="rgba(255,92,135,0.05)" stroke-width="1"/>
+        <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,92,135,0.04)" stroke-width="1"/>
+      </svg>
+      <div class="modal-hero-content">
+        <div class="modal-badge-row">
+          <span class="modal-badge">🎯 Leads</span>
+          <span class="modal-tag">División · Khairo</span>
+        </div>
+        <h2 class="modal-title">Khairo <span style="color:#ff5c87;">Leads</span></h2>
+        <p class="modal-subtitle">Captación, calificación y conversión de clientes potenciales con campañas pagas y embudos diseñados para vender. Más prospectos reales, menos ruido.</p>
+        <div class="modal-hero-metrics">
+          <div class="metric-item"><div class="metric-val">+3x</div><div class="metric-lbl">Leads calificados</div></div>
+          <div class="metric-item"><div class="metric-val">−40%</div><div class="metric-lbl">Costo por lead</div></div>
+          <div class="metric-item"><div class="metric-val">100%</div><div class="metric-lbl">Trazabilidad</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-label">Lo que hacemos</div>
+        <div class="modal-section-title">Servicios de <span style="color:#ff5c87;">Leads</span></div>
+        <div class="services-grid">
+          <div class="service-card"><span class="service-icon">📣</span><div class="service-name">Meta Ads & Google Ads</div><div class="service-desc">Campañas pagas gestionadas con estrategia real y control de ROAS.</div></div>
+          <div class="service-card"><span class="service-icon">🏆</span><div class="service-name">Landing Pages</div><div class="service-desc">Páginas de aterrizaje optimizadas para convertir visitas en leads.</div></div>
+          <div class="service-card"><span class="service-icon">🎯</span><div class="service-name">Segmentación</div><div class="service-desc">Audiencias precisas definidas para atraer prospectos con intención real de compra.</div></div>
+          <div class="service-card"><span class="service-icon">🔁</span><div class="service-name">Embudos Automatizados</div><div class="service-desc">Flujos de captación que nutren al prospecto hasta el momento de la venta.</div></div>
+          <div class="service-card"><span class="service-icon">📋</span><div class="service-name">CRM & Seguimiento</div><div class="service-desc">Sistema que organiza, prioriza y automatiza el seguimiento de cada contacto.</div></div>
+          <div class="service-card"><span class="service-icon">📊</span><div class="service-name">Reportes de ROAS</div><div class="service-desc">Informes semanales: costo por lead, conversiones, retorno y oportunidades.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">Metodología</div>
+        <div class="modal-section-title">El embudo que convierte</div>
+        <div class="process-steps">
+          <div class="step"><div class="step-num">01</div><div class="step-content"><div class="step-label">Audiencia</div><div class="step-sub">Definimos y segmentamos el público objetivo ideal para tu oferta.</div></div></div>
+          <div class="step"><div class="step-num">02</div><div class="step-content"><div class="step-label">Creativos</div><div class="step-sub">Desarrollamos textos, visuales y formatos de anuncio que capturan atención.</div></div></div>
+          <div class="step"><div class="step-num">03</div><div class="step-content"><div class="step-label">Campaña</div><div class="step-sub">Lanzamos y gestionamos las campañas en Meta Ads y/o Google Ads.</div></div></div>
+          <div class="step"><div class="step-num">04</div><div class="step-content"><div class="step-label">Captación</div><div class="step-sub">Los prospectos llegan a la landing page y entran al embudo de conversión.</div></div></div>
+          <div class="step"><div class="step-num">05</div><div class="step-content"><div class="step-label">Conversión</div><div class="step-sub">El flujo automático nutre y califica al prospecto hasta cerrar la venta.</div></div></div>
+          <div class="step"><div class="step-num">06</div><div class="step-content"><div class="step-label">Optimización</div><div class="step-sub">Analizamos ROAS, reducimos costo por lead y escalamos lo que funciona.</div></div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-label">¿Es para ti?</div>
+        <div class="modal-section-title">Khairo Leads es ideal si...</div>
+        <div class="forwho-grid">
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Pagas publicidad en Meta o Google pero no sabes si realmente te está generando ventas reales.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Recibes contactos pero no son calificados — personas sin intención real de compra.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Quieres escalar las ventas de forma predecible con un sistema que no dependa de ti.</div></div>
+          <div class="forwho-item"><div class="forwho-check">✓</div><div class="forwho-text">Tu negocio tiene un producto o servicio con demanda y necesitas más personas que lo conozcan.</div></div>
+        </div>
+      </div>
+
+      <div class="modal-cta-bar">
+        <div class="modal-cta-heading">¿Listo para llenar tu embudo de clientes reales?</div>
+        <div class="modal-cta-sub">Habla con nuestro equipo — te mostramos cómo estructuramos campañas con ROAS positivo.</div>
+        <div class="modal-cta-btns">
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20saber%20más%20sobre%20Khairo%20Leads" class="btn-modal-wa" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+          <a href="https://wa.me/573212613784?text=Hola%20Khairo,%20quiero%20activar%20campañas%20para%20conseguir%20más%20clientes" class="btn-modal-primary" target="_blank">Activar campañas →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // ─── SCROLL PROGRESS ───
+  window.addEventListener('scroll', () => {
+    const el = document.documentElement;
+    const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+    document.getElementById('scrollProgress').style.width = pct + '%';
+  }, { passive: true });
+
+  // ─── DRAWER MENU ───
+  function toggleDrawer() {
+    const btn = document.getElementById('hamburgerBtn');
+    const overlay = document.getElementById('drawerOverlay');
+    const drawer = document.getElementById('drawerMenu');
+    const isOpen = drawer.classList.toggle('active');
+    overlay.classList.toggle('active', isOpen);
+    btn.classList.toggle('active', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+
+  function closeDrawer() {
+    document.getElementById('hamburgerBtn').classList.remove('active');
+    document.getElementById('drawerOverlay').classList.remove('active');
+    document.getElementById('drawerMenu').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // ─── MODAL SYSTEM ───
+  function openModal(id) {
+    const overlay = document.getElementById('modal-' + id);
+    if (!overlay) return;
+    const sheet = overlay.querySelector('.modal-sheet');
+    if (sheet) sheet.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    // Swipe down to close
+    let startY = 0;
+    sheet.ontouchstart = (e) => { startY = e.touches[0].clientY; };
+    sheet.ontouchmove = (e) => {
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 80 && sheet.scrollTop === 0) closeModal(id);
+    };
+  }
+
+  function closeModal(id) {
+    const overlay = document.getElementById('modal-' + id);
+    if (!overlay) return;
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        closeModal(overlay.id.replace('modal-', ''));
+      }
+    });
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.active').forEach(overlay => {
+        closeModal(overlay.id.replace('modal-', ''));
+      });
+    }
+  });
+
+  // ─── PARTICLES (lite for mobile) ───
+  (function(){
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+    const COLORS = ['rgba(79,140,255,', 'rgba(123,97,255,', 'rgba(100,160,255,'];
+    const COUNT = 30;
+
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+    function init() {
+      particles = Array.from({ length: COUNT }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.3,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        alpha: Math.random() * 0.35 + 0.06,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        pulseSpeed: Math.random() * 0.012 + 0.004,
+        pulseOffset: Math.random() * Math.PI * 2,
+      }));
+    }
+
+    let frame = 0;
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      frame++;
+      // Connections (limited radius for perf)
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < 90) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(79,140,255,${(1 - dist/90) * 0.08})`;
+            ctx.lineWidth = 0.4;
+            ctx.stroke();
+          }
+        }
+      }
+      particles.forEach(p => {
+        const pulse = Math.sin(frame * p.pulseSpeed + p.pulseOffset);
+        const alpha = p.alpha + pulse * 0.04;
+        const r = p.r + pulse * 0.2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + Math.max(0, alpha) + ')';
+        ctx.fill();
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < -5) p.x = W + 5;
+        if (p.x > W + 5) p.x = -5;
+        if (p.y < -5) p.y = H + 5;
+        if (p.y > H + 5) p.y = -5;
+      });
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => { resize(); }, { passive: true });
+    resize(); init(); draw();
+  })();
+</script>
+</body>
+</html>

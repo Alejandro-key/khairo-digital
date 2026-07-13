@@ -1,0 +1,3 @@
+# Se usa al publicar la carpeta completa "khairo-digital" en Netlify Drop.
+[functions]
+  directory = "desktop/netlify/functions"
