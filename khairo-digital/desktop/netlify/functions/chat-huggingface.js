@@ -41,10 +41,11 @@ function limpiarTexto(texto, maxPalabras) {
 
 function esMensajePocoUtil(texto) {
   const t = texto.toLowerCase().trim();
+  const esNumero = /^\d+([.,]\d+)?$/.test(t);
 
   return (
-    t.length < 4 ||
-    /^(hola|buenas|hey|ok|okei|si|sí|no|gracias|vale|listo|ya|perfecto|que eres|qu[eé] eres|qui[eé]n eres|como est[aá]s)$/i.test(t)
+    (t.length < 4 && !esNumero) ||
+    /^(hola|buenas|hey|ok|okei|si|sí|no|gracias|vale|listo|ya|perfecto)$/i.test(t)
   );
 }
 
@@ -58,45 +59,79 @@ function mensajesDelUsuario(messages) {
 function detectarFase(messages) {
   const respuestas = mensajesDelUsuario(messages);
 
-  if (respuestas.length <= 1) return "diagnostico_1";
-  if (respuestas.length === 2) return "diagnostico_2";
+  if (respuestas.length <= 1) return "pregunta_1";
+  if (respuestas.length === 2) return "pregunta_2";
 
   return "recomendacion";
 }
 
-function ultimaRespuestaUsuario(messages) {
-  const usuarios = messages
-    .filter((m) => m.role === "user")
-    .map((m) => String(m.content || "").trim())
-    .filter(Boolean);
+function obtenerTema(messages) {
+  const texto = mensajesDelUsuario(messages).join(" ").toLowerCase();
 
-  return usuarios[usuarios.length - 1] || "";
+  if (/cita|agenda|reserv|barber|peluquer|sal[oó]n|consultorio/.test(texto)) {
+    return "citas";
+  }
+
+  if (/automatiz|whatsapp|instagram.*mensaje|responder.*cliente/.test(texto)) {
+    return "automatizacion";
+  }
+
+  if (/lead|captar|captaci[oó]n|anuncio|publicidad|campaña|campana/.test(texto)) {
+    return "leads";
+  }
+
+  if (/redes|instagram|facebook|tiktok|contenido|reel|perfil/.test(texto)) {
+    return "redes";
+  }
+
+  if (/web|p[aá]gina|landing|sitio/.test(texto)) {
+    return "web";
+  }
+
+  return "general";
 }
 
-function preguntaRespaldo(fase, textoUsuario) {
-  const t = textoUsuario.toLowerCase();
+function preguntaDiagnostico(fase, tema) {
+  const preguntas = {
+    citas: {
+      pregunta_1:
+        "Entiendo. ¿Hoy por dónde te llegan y organizas las citas: WhatsApp, Instagram, llamadas o alguna agenda digital?",
+      pregunta_2:
+        "¿Qué te gustaría resolver primero: confirmaciones y recordatorios, organizar horarios o evitar perder clientes que preguntan?"
+    },
+    automatizacion: {
+      pregunta_1:
+        "Entiendo. ¿Por cuál canal recibes más mensajes de clientes hoy: WhatsApp, Instagram, Facebook u otro?",
+      pregunta_2:
+        "¿Qué proceso te gustaría automatizar primero: respuestas iniciales, seguimiento, clasificación de clientes o agendamiento?"
+    },
+    leads: {
+      pregunta_1:
+        "Para entender tu caso, ¿de dónde llegan hoy la mayoría de tus clientes: redes sociales, recomendados, anuncios o WhatsApp?",
+      pregunta_2:
+        "¿Tu prioridad es conseguir más contactos, responderlos más rápido o hacer seguimiento para convertirlos en clientes?"
+    },
+    redes: {
+      pregunta_1:
+        "Para ubicar mejor tu negocio, ¿ya publicas contenido con frecuencia o tu presencia en redes todavía está empezando?",
+      pregunta_2:
+        "¿Qué resultado buscas primero con tus redes: más visibilidad, más mensajes o más ventas?"
+    },
+    web: {
+      pregunta_1:
+        "¿Tu negocio ya tiene una página web o los clientes solo te encuentran por redes sociales y WhatsApp?",
+      pregunta_2:
+        "¿Qué necesitas que haga principalmente esa página: mostrar servicios, recibir contactos, agendar citas o vender?"
+    },
+    general: {
+      pregunta_1:
+        "Para orientarte bien, ¿a qué se dedica tu negocio y cuál es el principal problema que quieres resolver hoy?",
+      pregunta_2:
+        "¿Qué resultado te gustaría conseguir primero: más clientes, mejorar tu presencia digital, organizar procesos o automatizar la atención?"
+    }
+  };
 
-  if (/cita|agenda|reserv/.test(t)) {
-    return fase === "diagnostico_1"
-      ? "Entiendo. ¿Hoy cómo agendan las citas: por WhatsApp, Instagram, llamadas o alguna agenda digital?"
-      : "¿Aproximadamente cuántas citas reciben al mes y qué problema te gustaría eliminar primero: demoras, olvidos o mensajes perdidos?";
-  }
-
-  if (/lead|cliente|captar|captaci[oó]n|anuncio|publicidad/.test(t)) {
-    return fase === "diagnostico_1"
-      ? "Entiendo. ¿Actualmente de dónde llegan la mayoría de tus clientes: redes sociales, recomendados, anuncios o WhatsApp?"
-      : "¿Tu prioridad es conseguir más contactos, responderlos más rápido o hacer seguimiento para que compren?";
-  }
-
-  if (/redes|instagram|contenido|reel|perfil/.test(t)) {
-    return fase === "diagnostico_1"
-      ? "Para entender mejor tu caso: ¿ya publicas contenido con frecuencia o tu presencia en redes todavía está empezando?"
-      : "¿Qué buscas lograr primero con tus redes: más visibilidad, más mensajes o más ventas?";
-  }
-
-  return fase === "diagnostico_1"
-    ? "Para orientarte bien, ¿a qué se dedica tu negocio y cuál es el principal problema que quieres resolver hoy?"
-    : "¿Qué resultado te gustaría conseguir primero: más clientes, mejorar tu presencia digital, organizar procesos o automatizar la atención?";
+  return preguntas[tema][fase];
 }
 
 exports.handler = async (event) => {
@@ -131,8 +166,27 @@ exports.handler = async (event) => {
         content: String(m.content)
       }));
 
+    const ultimoMensaje = String(
+      historial.filter((m) => m.role === "user").slice(-1)[0]?.content || ""
+    ).toLowerCase();
+
+    if (/^(qu[eé] eres|qui[eé]n eres|que haces|qu[eé] haces)[?¡! ]*$/i.test(ultimoMensaje)) {
+      return respuesta(200, {
+        reply:
+          "Soy Khairo IA, el asistente estratégico de Khairo Online. Te ayudo a identificar cómo mejorar la presencia digital, captación de clientes, contenido, anuncios o automatización de tu negocio."
+      });
+    }
+
     const fase = detectarFase(historial);
-    const ultimoMensaje = ultimaRespuestaUsuario(historial);
+    const tema = obtenerTema(historial);
+
+    // Las dos preguntas de diagnóstico son controladas:
+    // no dependen de la IA y nunca recomiendan planes antes de tiempo.
+    if (fase === "pregunta_1" || fase === "pregunta_2") {
+      return respuesta(200, {
+        reply: preguntaDiagnostico(fase, tema)
+      });
+    }
 
     const instrucciones = `
 Eres Khairo IA, asistente comercial y estratégico de Khairo Online, una agencia de crecimiento digital para negocios.
@@ -140,10 +194,10 @@ Eres Khairo IA, asistente comercial y estratégico de Khairo Online, una agencia
 Habla siempre en español colombiano, claro, cercano y profesional.
 No uses Markdown, hashtags, asteriscos, títulos, listas largas ni texto robótico.
 No inventes servicios, resultados, precios ni datos.
-Responde máximo en 75 palabras. Si piden detalles de un plan recomendado, puedes usar hasta 120 palabras.
+Normalmente responde en máximo 75 palabras. Si la persona pregunta qué incluye un plan, puedes responder hasta 120 palabras.
 
-Solo puedes ayudar en temas de Khairo Online: presencia digital, redes sociales, contenido, branding, páginas web, captación de clientes, anuncios, leads, automatización, ventas y organización de procesos.
-Si preguntan algo ajeno a estos temas, di brevemente que puedes ayudar con crecimiento digital del negocio y pregunta qué problema comercial o digital desean resolver.
+Solo ayudas con temas de Khairo Online: presencia digital, redes sociales, contenido, branding, páginas web, captación de clientes, anuncios, leads, automatización, ventas y organización de procesos.
+Si preguntan algo ajeno, di brevemente que puedes ayudar con crecimiento digital del negocio y vuelve al tema comercial.
 
 Información real de Khairo Online:
 
@@ -157,7 +211,7 @@ Incluye estrategia intermedia, optimización de oferta y mensaje, 8 a 12 piezas 
 
 ÉLITE — $340.000 COP/mes.
 Para negocios que quieren escalar ventas con anuncios, automatización y un sistema completo.
-Incluye estrategia avanzada, optimización continua, sistema avanzado de leads, 8 a 12 piezas estratégicas, 4 a 8 videos, creativos para publicidad, automatización avanzada con filtros, landing page, análisis de métricas y soporte prioritario.
+Incluye estrategia avanzada, optimización continua, sistema avanzado de leads, 8 a 12 piezas estratégicas, 4 a 8 videos, creativos para publicidad, automatización avanzada con filtros, landing page, análisis de métricas y mejoras constantes, además de soporte prioritario.
 
 La automatización ayuda a responder más rápido por WhatsApp o Instagram, clasificar interesados, hacer seguimiento, reducir mensajes perdidos y convertir más consultas en oportunidades reales.
 
@@ -165,38 +219,21 @@ El sistema de leads puede recomendarse aparte cuando haga falta. Puede incluir a
 
 Khairo también puede crear un plan completamente personalizado según problema, objetivos, necesidades y presupuesto.
 
-FASE ACTUAL: ${fase}
+La persona ya respondió las preguntas necesarias. Ahora analiza la conversación antes de responder.
 
-REGLAS OBLIGATORIAS:
-
-Si la fase es diagnostico_1:
-- No menciones NOVA, PULSE, ÉLITE, precios ni planes.
-- No recomiendes ningún servicio todavía.
-- Reconoce brevemente el problema.
-- Haz UNA sola pregunta concreta sobre la situación actual del negocio.
-- Debes diagnosticar antes de ofrecer.
-
-Si la fase es diagnostico_2:
-- No menciones NOVA, PULSE, ÉLITE, precios ni planes.
-- No recomiendes ningún servicio todavía.
-- Haz UNA segunda pregunta útil y distinta.
-- Busca entender el objetivo, volumen de clientes, problema principal, presencia digital actual, canales de atención o presupuesto aproximado.
-- Haz solamente una pregunta.
-
-Si la fase es recomendacion:
+REGLAS PARA RECOMENDAR:
 - Resume el problema detectado en una frase corta.
-- Antes de nombrar una recomendación, usa esta frase exacta:
+- Antes de nombrar una recomendación, usa exactamente esta frase:
 "Según lo que me cuentas, y teniendo en cuenta tu necesidad y el problema que quieres resolver, la opción que mejor se ajusta a tu caso es:"
-- Recomienda un solo plan mensual y explica por qué encaja.
-- Menciona 2 o 3 elementos del plan que solucionan directamente el problema de esa persona.
-- Si la persona pide más detalles, explica el plan completo de forma adaptada a su caso. Relaciona los elementos del plan con resultados prácticos; no des una lista fría ni repitas solamente el precio.
-- Puedes añadir una segunda recomendación complementaria solamente si aporta algo diferente y necesario. Por ejemplo: un plan mensual más un sistema de leads básico, intermedio o avanzado.
-- Nunca recomiendes dos planes mensuales al mismo tiempo.
+- Recomienda solamente un plan mensual: NOVA, PULSE o ÉLITE.
+- Explica brevemente por qué encaja y menciona 2 o 3 elementos que solucionan el problema específico de esa persona.
+- Si pregunta qué más incluye el plan, explica los demás elementos de forma contextualizada. No des una lista fría: explica cómo cada cosa ayudaría a su negocio.
+- Puedes añadir una segunda recomendación solo si es complementaria y necesaria: por ejemplo, un sistema de leads básico, intermedio o avanzado junto al plan. Nunca recomiendes dos planes mensuales.
 - No digas "necesitas este plan", no presiones y no preguntes "¿te interesa este plan?".
-- Si el caso no encaja exactamente, propone un plan personalizado.
+- Si el caso no encaja por completo, menciona la posibilidad de un plan personalizado.
 
 CONTACTO:
-Solo pide contacto si la persona dice que ya entendió, está satisfecha, quiere continuar o pregunta cómo seguir.
+Solo pide contacto cuando la persona diga que ya entendió, está satisfecha, quiere continuar o pregunta cómo seguir.
 En ese momento escribe exactamente:
 "¿Nos dejas tu WhatsApp o correo electrónico? El equipo de Khairo Online te contactará para continuar con tu diagnóstico gratuito."
 `;
@@ -228,20 +265,12 @@ En ese momento escribe exactamente:
       });
     }
 
-    let texto = resultado?.choices?.[0]?.message?.content || "";
-
-    const mencionoPlanMuyPronto =
-      fase !== "recomendacion" &&
-      /\b(nova|pulse|élite|elite|plan|cop\/mes|\$210|\$260|\$340)\b/i.test(texto);
-
-    if (mencionoPlanMuyPronto) {
-      texto = preguntaRespaldo(fase, ultimoMensaje);
-    }
-
-    const limite = fase === "recomendacion" ? 120 : 55;
+    const texto =
+      resultado?.choices?.[0]?.message?.content ||
+      "Con la información que me diste, puedo orientarte con una solución adaptada a tu negocio.";
 
     return respuesta(200, {
-      reply: limpiarTexto(texto, limite)
+      reply: limpiarTexto(texto, 120)
     });
   } catch (error) {
     console.error(error);
