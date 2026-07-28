@@ -73,16 +73,17 @@
     #bgStars{
       position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
       background:
-        radial-gradient(ellipse 80% 55% at 50% -5%, rgba(28,55,140,0.25) 0%, transparent 70%),
-        url("./imagen-principal.png") center center / cover no-repeat;
+        linear-gradient(180deg, rgba(2,7,20,.28), rgba(2,4,14,.7)),
+        radial-gradient(ellipse 80% 55% at 50% -5%, rgba(28,55,140,0.2) 0%, transparent 70%),
+        url("./fondo-red-khairo.png") center center / cover no-repeat;
       background-color:#04060f;
       will-change: transform, background-position;
       transition: transform 600ms cubic-bezier(.2,.9,.25,1);
       animation: bgDrift 22s ease-in-out infinite alternate;
     }
     @keyframes bgDrift{
-      0%   { background-position: 50% 50%, 48% 48%; background-size: auto, 110% auto; }
-      100% { background-position: 50% 50%, 52% 52%; background-size: auto, 118% auto; }
+      0%   { background-position: 50% 50%, 50% 50%, 48% 48%; background-size: auto, auto, 110% auto; }
+      100% { background-position: 50% 50%, 50% 50%, 52% 52%; background-size: auto, auto, 118% auto; }
     }
     #bgStars::before, #bgStars::after { opacity:.55; mix-blend-mode:screen; }
     /* parallax wrapper for subtle bg movement */
@@ -146,6 +147,15 @@
       background-size:50% 50%;
       animation:starTwinkle2 5.5s ease-in-out infinite alternate;
     }
+
+    /* Fondo de red vivo: profundidad, barrido y pulso de energía */
+    #bgStars .bg-flow{position:absolute;inset:-15%;pointer-events:none;opacity:.3;background:repeating-linear-gradient(112deg,transparent 0 90px,rgba(0,217,255,.055) 91px 92px,transparent 93px 180px);mix-blend-mode:screen;transform:rotate(-4deg);animation:bgFlowDrift 18s linear infinite}
+    #bgStars .bg-beam{position:absolute;left:-15%;right:-15%;top:38%;height:22%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(0,217,255,.1),rgba(123,97,255,.14),transparent);filter:blur(28px);transform:rotate(-7deg);animation:bgBeamPass 12s ease-in-out infinite}
+    #bgStars .bg-horizon{position:absolute;left:-10%;right:-10%;bottom:4%;height:34%;pointer-events:none;background:radial-gradient(ellipse at 50% 100%,rgba(0,217,255,.11),transparent 66%);filter:blur(16px);animation:bgHorizonPulse 8s ease-in-out infinite}
+    @keyframes bgFlowDrift{to{background-position:360px -220px}}
+    @keyframes bgBeamPass{0%,100%{transform:translateX(-12%) rotate(-7deg);opacity:.18}50%{transform:translateX(12%) rotate(-7deg);opacity:.6}}
+    @keyframes bgHorizonPulse{0%,100%{opacity:.45;transform:scaleX(.94)}50%{opacity:.95;transform:scaleX(1.05)}}
+    @media (prefers-reduced-motion:reduce), (max-width:768px){#bgStars .bg-flow{animation:none;opacity:.16}#bgStars .bg-beam{animation:none;opacity:.22}#bgStars .bg-horizon{animation:none;opacity:.5}}
 
     @keyframes starTwinkle1{
       0%  {opacity:0.55}
@@ -2597,8 +2607,9 @@
     }
 
     /* Status */
+    .ldr-status-row{display:flex;align-items:center;justify-content:space-between;width:260px;max-width:84vw;margin-top:13px;gap:20px}
     .ldr-status {
-      margin-top:13px;
+      margin-top:0;
       font-size:9px;font-weight:700;letter-spacing:2.5px;
       text-transform:uppercase;color:rgba(79,140,255,0.4);
       font-family:'Courier New',monospace;
@@ -2607,6 +2618,7 @@
       opacity:0;
       animation:ldrFadeUp 0.4s ease 1.35s both;
     }
+    .ldr-percent{font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:1px;color:#00d9ff;opacity:0;animation:ldrFadeUp .4s ease 1.35s both;min-width:38px;text-align:right}
 
     @keyframes ldrFadeUp{
       from{opacity:0;transform:translateY(6px)}
@@ -2621,6 +2633,54 @@
       55% {clip-path:inset(44% 0 44% 0 round 2px);filter:brightness(1.2)}
       84% {clip-path:inset(49.5% 0 49.5% 0 round 2px)}
       100%{clip-path:inset(50% 0 50% 0);opacity:0}
+    }
+
+    /* FORGE MAX — marco de sistema y profundidad cinematográfica */
+    .ldr-grid{position:absolute;inset:-20%;opacity:.34;pointer-events:none;background-image:linear-gradient(rgba(79,140,255,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(79,140,255,.075) 1px,transparent 1px);background-size:56px 56px;transform:perspective(600px) rotateX(58deg) translateY(14%);transform-origin:center bottom;mask-image:linear-gradient(to top,rgba(0,0,0,.85),transparent 76%);animation:ldrGridDrift 18s linear infinite}
+    @keyframes ldrGridDrift{to{background-position:0 56px,56px 0}}
+    .ldr-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 28%,rgba(2,3,10,.22) 64%,rgba(2,3,10,.9) 100%)}
+    .ldr-scanline{position:absolute;left:0;right:0;top:-12%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,217,255,.65),rgba(123,97,255,.7),transparent);box-shadow:0 0 22px rgba(0,217,255,.45);opacity:.55;pointer-events:none;animation:ldrScanline 5.5s ease-in-out infinite}
+    @keyframes ldrScanline{0%{transform:translateY(0);opacity:0}12%{opacity:.6}88%{opacity:.6}100%{transform:translateY(100vh);opacity:0}}
+    .ldr-topline{position:absolute;top:28px;left:34px;right:34px;display:flex;justify-content:space-between;align-items:center;color:rgba(180,204,240,.48);font:700 9px/1 'Courier New',monospace;letter-spacing:2.5px;text-transform:uppercase;z-index:5;opacity:0;animation:ldrFadeUp .6s ease .2s both}
+    .ldr-topline strong{color:#00d9ff;font-weight:700}.ldr-topline span:last-child{color:rgba(154,163,178,.4)}
+    .ldr-corner{position:absolute;width:44px;height:44px;border-color:rgba(79,140,255,.38);z-index:5;pointer-events:none;opacity:0;animation:ldrFadeUp .6s ease .35s both}
+    .ldr-corner.tl{left:28px;top:58px;border-left:1px solid;border-top:1px solid}.ldr-corner.tr{right:28px;top:58px;border-right:1px solid;border-top:1px solid}.ldr-corner.bl{left:28px;bottom:34px;border-left:1px solid;border-bottom:1px solid}.ldr-corner.br{right:28px;bottom:34px;border-right:1px solid;border-bottom:1px solid}
+    .ldr-side{position:absolute;top:50%;z-index:5;display:grid;gap:10px;color:rgba(154,163,178,.34);font:700 8px/1.2 'Courier New',monospace;letter-spacing:1.8px;text-transform:uppercase;writing-mode:vertical-rl;opacity:0;animation:ldrFadeUp .6s ease .55s both}
+    .ldr-side.left{left:32px;transform:translateY(-50%) rotate(180deg)}.ldr-side.right{right:32px;transform:translateY(-50%)}.ldr-side b{color:rgba(0,217,255,.65);font-weight:700}
+    .ldr-core-label{margin-bottom:13px;color:rgba(154,163,178,.4);font:700 8px/1 'Courier New',monospace;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:ldrFadeUp .5s ease .35s both}
+    .ldr-core-label::before{content:'◈';color:#00d9ff;margin-right:8px;text-shadow:0 0 12px #00d9ff}
+    .ldr-logo-img{position:relative;z-index:2}
+    @media (prefers-reduced-motion:reduce), (max-width:768px){.ldr-grid,.ldr-scanline{animation:none!important}.ldr-grid{opacity:.18}.ldr-topline{left:18px;right:18px}.ldr-side{display:none}.ldr-corner{opacity:.55}.ldr-corner.tl{left:16px}.ldr-corner.tr{right:16px}.ldr-corner.bl{left:16px}.ldr-corner.br{right:16px}}
+
+    /* ══ FORGE MAX · objeto central y red de conexiones ══ */
+    .ldr-network{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;opacity:.7;mix-blend-mode:screen}
+    .ldr-network path,.ldr-network line{fill:none;stroke:rgba(69,170,255,.22);stroke-width:1;stroke-dasharray:3 12;animation:ldrNetworkDash 14s linear infinite}
+    .ldr-network path:nth-child(2n),.ldr-network line:nth-child(2n){stroke:rgba(178,93,255,.22);animation-direction:reverse;animation-duration:19s}
+    .ldr-network circle{fill:#73dfff;opacity:.7;filter:drop-shadow(0 0 5px #00d9ff);animation:ldrNodePulse 2.7s ease-in-out infinite}
+    .ldr-network circle:nth-of-type(2n){fill:#b993ff;filter:drop-shadow(0 0 5px #8c6dff);animation-delay:.8s}
+    @keyframes ldrNetworkDash{to{stroke-dashoffset:-180}}
+    @keyframes ldrNodePulse{0%,100%{opacity:.22;transform:scale(.7)}50%{opacity:1;transform:scale(1.3)}}
+    .ldr-hero-orb{position:absolute;left:50%;top:-88px;width:330px;height:330px;transform:translateX(-50%);border-radius:50%;z-index:0;background:radial-gradient(circle at 35% 28%,rgba(137,193,255,.26) 0 4%,transparent 18%),radial-gradient(circle at 63% 63%,rgba(128,76,255,.3),transparent 47%),radial-gradient(circle at 42% 38%,#121b48 0 28%,#080d24 58%,#02030b 76%);border:1px solid rgba(80,154,255,.45);box-shadow:inset -32px -20px 70px rgba(119,41,255,.38),inset 28px 18px 56px rgba(0,217,255,.24),0 0 0 18px rgba(66,103,255,.05),0 0 65px rgba(52,102,255,.33),0 0 150px rgba(123,97,255,.21);animation:ldrOrbBreath 4.5s ease-in-out infinite}
+    .ldr-hero-orb::before{content:'';position:absolute;inset:17px;border-radius:50%;border:1px solid rgba(137,201,255,.3);background:repeating-conic-gradient(from 10deg,transparent 0 13deg,rgba(95,160,255,.16) 14deg 15deg,transparent 16deg 33deg);mask-image:radial-gradient(circle,transparent 0 55%,#000 56% 58%,transparent 59%);animation:ldrOrbSpin 16s linear infinite}
+    .ldr-hero-orb::after{content:'';position:absolute;inset:-34px;border-radius:50%;border:2px solid transparent;border-top-color:#00d9ff;border-right-color:rgba(123,97,255,.75);filter:drop-shadow(0 0 10px rgba(0,217,255,.7));transform:rotate(-22deg) skewX(-8deg);animation:ldrOrbRing 5s linear infinite}
+    .ldr-orb-ring{position:absolute;inset:-20px;border:1px solid rgba(0,217,255,.45);border-left-color:transparent;border-right-color:rgba(164,100,255,.6);border-radius:50%;transform:rotate(68deg) rotateX(62deg);filter:drop-shadow(0 0 8px rgba(0,217,255,.6));animation:ldrOrbRing 6s linear infinite reverse}
+    .ldr-orb-ring.r2{inset:-48px;transform:rotate(-18deg) rotateX(68deg);border-color:rgba(123,97,255,.38);border-bottom-color:#00d9ff;animation-duration:9s}
+    .ldr-orb-flare{position:absolute;width:120px;height:18px;left:18px;top:52px;border-radius:50%;background:#00d9ff;filter:blur(16px);opacity:.5;transform:rotate(-32deg);animation:ldrFlare 3.8s ease-in-out infinite}
+    @keyframes ldrOrbBreath{0%,100%{filter:brightness(.95);transform:translateX(-50%) scale(.98)}50%{filter:brightness(1.25);transform:translateX(-50%) scale(1.04)}}
+    @keyframes ldrOrbSpin{to{transform:rotate(360deg)}}
+    @keyframes ldrOrbRing{to{transform:rotate(338deg) rotateX(62deg)}}
+    @keyframes ldrFlare{0%,100%{opacity:.2;transform:translate(-8px,4px) rotate(-32deg)}50%{opacity:.72;transform:translate(26px,-8px) rotate(-32deg)}}
+    .ldr-c > *:not(.ldr-hero-orb):not(.ldr-orbit){position:relative;z-index:3}
+    .ldr-c .ldr-logo-img{width:112px!important;height:112px!important;margin-bottom:26px!important;border-color:rgba(92,189,255,.7)!important;box-shadow:0 0 0 10px rgba(79,140,255,.08),0 0 38px rgba(0,217,255,.55),0 0 92px rgba(123,97,255,.4)!important}
+    .ldr-word{gap:7px;margin-bottom:14px}
+    .ldr-word span{font-size:clamp(3rem,8vw,4.8rem);letter-spacing:2px;text-shadow:0 0 28px rgba(79,140,255,.22)}
+    .ldr-tag{font-size:11px;letter-spacing:4px;margin-bottom:24px}
+    .ldr-track,.ldr-status-row{width:360px;max-width:78vw}
+    .ldr-track{height:3px;background:rgba(255,255,255,.08);box-shadow:0 0 22px rgba(79,140,255,.16)}
+    .ldr-status-row{margin-top:16px}
+    .ldr-hero-orb + *{}
+    @media (prefers-reduced-motion:reduce), (max-width:768px){
+      .ldr-network{opacity:.22}.ldr-hero-orb{width:245px;height:245px;top:-45px;animation:none}.ldr-hero-orb::before,.ldr-hero-orb::after,.ldr-orb-ring,.ldr-orb-flare{animation:none!important}.ldr-c .ldr-logo-img{width:84px!important;height:84px!important;margin-bottom:20px!important}.ldr-word{gap:3px}.ldr-word span{font-size:clamp(2.35rem,13vw,3.5rem);letter-spacing:0}.ldr-tag{font-size:9px;letter-spacing:2.5px}.ldr-track,.ldr-status-row{width:280px;max-width:78vw}
     }
 
     /* ── MICRO ANIMACIÓN EN H1 ── */
@@ -2938,6 +2998,77 @@
 })();
 </script>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     KHAIRO CINEMATIC MOTION LAYER · Solo interacción visual, sin modificar contenido
+═══════════════════════════════════════════════════════════════════════════ -->
+<style>
+  .kh-cinema-tilt{
+    --kh-rx:0deg; --kh-ry:0deg; --kh-lift:0px;
+    transform-style:preserve-3d;
+    transform:perspective(1100px) rotateX(var(--kh-rx)) rotateY(var(--kh-ry)) translateY(var(--kh-lift));
+    transition:transform .6s cubic-bezier(.2,.85,.2,1), box-shadow .6s ease;
+    will-change:transform;
+  }
+  .kh-cinema-tilt:hover{ --kh-lift:-8px; }
+  .kh-cinema-tilt::after{
+    content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.13) 45%,transparent 62%);
+    background-size:220% 220%; background-position:120% 120%; opacity:0;
+    transition:opacity .35s ease, background-position .8s cubic-bezier(.2,.8,.2,1);
+    mix-blend-mode:screen;
+  }
+  .kh-cinema-tilt:hover::after{ opacity:1; background-position:-20% -20%; }
+  .kh-cinema-enter{ opacity:0; transform:translateY(34px) scale(.98); transition:opacity .8s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+  .kh-cinema-enter.kh-cinema-visible{ opacity:1; transform:translateY(0) scale(1); }
+  .hero-video-frame.kh-cinema-hero{ box-shadow:0 38px 100px rgba(44,79,220,.28), 0 0 0 1px rgba(125,151,255,.14); }
+  .hero-video-frame.kh-cinema-hero::after{ animation:khHeroSweep 7s ease-in-out infinite; }
+  @keyframes khHeroSweep{ 0%,100%{opacity:.12;transform:translateX(-120%)} 50%{opacity:.32;transform:translateX(120%)} }
+  @media (prefers-reduced-motion:reduce), (max-width:768px){
+    .kh-cinema-tilt{ transform:none!important; transition:none!important; }
+    .kh-cinema-tilt::after,.hero-video-frame.kh-cinema-hero::after{ animation:none!important; display:none; }
+    .kh-cinema-enter{ opacity:1; transform:none; transition:none; }
+  }
+</style>
+<script>
+(function(){
+  function ready(fn){
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fn);
+    else fn();
+  }
+  ready(function(){
+    var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var desktop=window.matchMedia&&window.matchMedia('(hover:hover) and (min-width: 769px)').matches;
+    var tiltTargets=document.querySelectorAll('.pkh-card, .ow-panel, .cs-card, .area-card, .service-card');
+    tiltTargets.forEach(function(card){
+      card.classList.add('kh-cinema-tilt');
+      if(!desktop||reduced) return;
+      card.addEventListener('mousemove',function(e){
+        var r=card.getBoundingClientRect();
+        var ry=((e.clientX-r.left)/r.width-.5)*10;
+        var rx=-((e.clientY-r.top)/r.height-.5)*8;
+        card.style.setProperty('--kh-rx',rx.toFixed(2)+'deg');
+        card.style.setProperty('--kh-ry',ry.toFixed(2)+'deg');
+      },{passive:true});
+      card.addEventListener('mouseleave',function(){
+        card.style.setProperty('--kh-rx','0deg'); card.style.setProperty('--kh-ry','0deg');
+      });
+    });
+
+    var hero=document.querySelector('.hero-video-frame');
+    if(hero){ hero.classList.add('kh-cinema-hero'); }
+
+    if(reduced) return;
+    var enterTargets=document.querySelectorAll('.ow-panel:not(.reveal), .cs-card:not(.reveal), .service-card:not(.reveal), .method-step:not(.reveal)');
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(entries){ entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('kh-cinema-visible'); io.unobserve(entry.target); }
+      }); },{threshold:.14,rootMargin:'0px 0px -8% 0px'});
+      enterTargets.forEach(function(el,i){ el.classList.add('kh-cinema-enter'); el.style.transitionDelay=Math.min(i%5,4)*70+'ms'; io.observe(el); });
+    }
+  });
+})();
+</script>
+
 <!-- ── Full-bleed width system: sin espacios muertos a los costados ── -->
 <style>
   /* Scale root font size with viewport so rem-based values grow naturally */
@@ -3006,12 +3137,32 @@
 <body>
 
   <!-- ── Star field background ── -->
-  <div id="bgStars" aria-hidden="true"></div>
+  <div id="bgStars" aria-hidden="true">
+    <div class="bg-flow"></div>
+    <div class="bg-beam"></div>
+    <div class="bg-horizon"></div>
+  </div>
 
   <!-- ═══════════════════════════════════════════════
        KHAIRO · FORGE — Cinematic loading screen
   ═══════════════════════════════════════════════ -->
   <div id="platformLoader" class="platform-loader" role="status" aria-label="Cargando Khairo">
+
+    <div class="ldr-grid" aria-hidden="true"></div>
+    <div class="ldr-vignette" aria-hidden="true"></div>
+    <div class="ldr-scanline" aria-hidden="true"></div>
+    <div class="ldr-topline"><span><strong>KHAIRO</strong> / DIGITAL GROWTH SYSTEM</span><span>BOOT SEQUENCE · 01</span></div>
+    <div class="ldr-corner tl" aria-hidden="true"></div><div class="ldr-corner tr" aria-hidden="true"></div>
+    <div class="ldr-corner bl" aria-hidden="true"></div><div class="ldr-corner br" aria-hidden="true"></div>
+    <div class="ldr-side left" aria-hidden="true"><b>STRATEGY</b><span>DESIGN</span><span>PERFORMANCE</span></div>
+    <div class="ldr-side right" aria-hidden="true"><span>BUILD 2026</span><b>ONLINE</b><span>SECURE CHANNEL</span></div>
+    <svg class="ldr-network" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M80 690 L250 510 L420 610 L565 410 L720 500 L880 300 L1040 560 L1210 450 L1370 650"/>
+      <path d="M40 280 L220 390 L370 230 L560 340 L710 180 L930 360 L1110 210 L1390 330"/>
+      <path d="M170 820 L340 670 L520 760 L700 630 L900 760 L1080 650 L1280 790"/>
+      <line x1="250" y1="510" x2="370" y2="230"/><line x1="565" y1="410" x2="710" y2="180"/><line x1="880" y1="300" x2="1110" y2="210"/>
+      <circle cx="250" cy="510" r="3"/><circle cx="420" cy="610" r="2.5"/><circle cx="565" cy="410" r="3"/><circle cx="880" cy="300" r="3"/><circle cx="1040" cy="560" r="2.5"/><circle cx="1210" cy="450" r="3"/><circle cx="220" cy="390" r="2.5"/><circle cx="710" cy="180" r="3"/><circle cx="1110" cy="210" r="2.5"/>
+    </svg>
 
     <!-- Single ambient glow orb -->
     <div class="ldr-glow-orb"></div>
@@ -3022,6 +3173,9 @@
 
     <!-- Central content -->
     <div class="ldr-c">
+
+      <div class="ldr-core-label">Growth engine / initializing</div>
+      <div class="ldr-hero-orb" aria-hidden="true"><span class="ldr-orb-ring"></span><span class="ldr-orb-ring r2"></span><span class="ldr-orb-flare"></span></div>
 
       <!-- Orbital rings around logo (decorativos) -->
       <div class="ldr-orbit r1" aria-hidden="true"></div>
@@ -3078,7 +3232,10 @@
       </div>
 
       <!-- Status -->
-      <div class="ldr-status" id="ldrStatus">Iniciando sistemas</div>
+      <div class="ldr-status-row">
+        <div class="ldr-status" id="ldrStatus">Iniciando sistemas</div>
+        <div class="ldr-percent" id="ldrPercent">0%</div>
+      </div>
 
     </div>
   </div>
@@ -3089,6 +3246,7 @@
     var loader = document.getElementById('platformLoader');
     var fillEl = document.getElementById('ldrFill');
     var statEl = document.getElementById('ldrStatus');
+    var pctEl  = document.getElementById('ldrPercent');
     if (!loader) return;
 
     /* ── Animated fill via scaleX (GPU composited) ── */
@@ -3103,6 +3261,7 @@
         var ease = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
         currentPct = start + (target - start) * ease;
         if (fillEl) fillEl.style.transform = 'scaleX(' + (currentPct / 100).toFixed(4) + ')';
+        if (pctEl) pctEl.textContent = Math.round(currentPct) + '%';
         if (p < 1) requestAnimationFrame(tick);
         else {
           currentPct = target;
