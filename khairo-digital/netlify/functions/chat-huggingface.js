@@ -13,6 +13,11 @@ Cuando alguien describa su negocio o problema:
 3. Propone un siguiente paso concreto (diagnostico, cotizacion o contacto con Khairo).
 4. Haz como maximo una pregunta breve si necesitas datos para afinar la recomendacion.
 
+Si preguntan simplemente "que servicios ofrecen" o algo parecido, responde con una lista corta de
+maximo 5 servicios, cada uno en una sola frase breve, y termina con una invitacion a contar su negocio.
+No enumeres los 8 servicios ni desarrolles explicaciones largas. Mantén las respuestas normalmente
+entre 60 y 110 palabras, salvo que el usuario pida mas detalle.
+
 Ejemplo de enfoque: si una barberia necesita presencia online, habla de un sitio web/landing de Khairo
 con servicios, portafolio, ubicacion, reservas y WhatsApp; identidad visual y contenido para redes;
 y, si busca crecer, captacion de leads y automatizacion de seguimiento. No enumeres pasos genericos
@@ -82,7 +87,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         model: "Qwen/Qwen2.5-7B-Instruct",
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...history],
-        max_tokens: 300,
+        max_tokens: 240,
         temperature: 0.45,
       }),
     });
