@@ -3398,7 +3398,7 @@
       <div class="ldr-orbit r2" aria-hidden="true"></div>
 
       <!-- Logo exclusivo del loader -->
-      <img src="khairo-logo.png"
+      <img src="khairo_logo_v2_1.png"
            id="ldrLogoImg"
            class="ldr-logo-img"
            alt="Khairo"
@@ -8506,6 +8506,11 @@ document.querySelectorAll('.site-footer .footer-col-title').forEach(h=>{ h.setAt
     document.addEventListener('DOMContentLoaded', attachIAListeners);
   } else {
     attachIAListeners();
+  }
+
+  // Permite abrir la IA desde páginas externas del ecosistema Khairo.
+  if (new URLSearchParams(window.location.search).get('openIA') === '1') {
+    setTimeout(function(){ if (typeof openKhairoIAModal === 'function') openKhairoIAModal(); }, 220);
   }
 
   // Loader control moved to dedicated script tag below loader HTML
