@@ -117,7 +117,18 @@
       text-rendering: optimizeLegibility;
     }
 
-    /* ── Star field background ── */
+    /* ── Star field background (reemplazado por Beams WebGL, ver #khBeamsBg) ── */
+    #bgStars{ display:none !important; }
+    #khBeamsBg{
+      position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+      background:#04060f;
+    }
+    #khBeamsBg canvas{ display:block;width:100%;height:100%; }
+    /* ── Ribbons (efecto de cursor global, adaptado de React Bits) ── */
+    #khRibbonsFx{
+      position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+    }
+    #khRibbonsFx canvas{ display:block;width:100%;height:100%; }
     #bgStars{
       position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
       background:
@@ -366,6 +377,58 @@
       box-shadow:0 10px 32px rgba(79,140,255,0.4);
     }
     nav.primary a.cta:hover::before{transform:translateX(100%)}
+
+    /* ── PillNav (adaptación vanilla JS de React Bits) ── */
+    .pill-list{
+      display:flex;align-items:stretch;gap:3px;
+      list-style:none;margin:0;padding:4px;
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:9999px;
+      box-shadow:0 4px 20px rgba(2,6,23,0.4);
+    }
+    .pill-list li{display:flex;height:100%;}
+    nav.primary a.pill{
+      position:relative;
+      display:inline-flex;align-items:center;justify-content:center;
+      height:38px;padding:0 16px;
+      border-radius:9999px;
+      color:var(--muted);font-weight:700;font-size:13px;letter-spacing:0.1px;
+      text-decoration:none;
+      overflow:hidden;
+      background:transparent;
+      cursor:pointer;
+      transition:color 0.2s ease;
+    }
+    nav.primary a.pill::before,
+    nav.primary a.pill::after{ content:none; }
+    nav.primary a.pill:hover{ color:#e6eef8; transform:none; }
+    nav.primary .pill .hover-circle{
+      position:absolute;left:50%;bottom:0;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      z-index:1;display:block;pointer-events:none;will-change:transform;
+    }
+    nav.primary .pill .label-stack{position:relative;display:inline-block;line-height:1;z-index:2;}
+    nav.primary .pill .pill-label{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;line-height:1;will-change:transform;}
+    nav.primary .pill .pill-label-hover{position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:6px;color:#ffffff;z-index:3;will-change:transform,opacity;}
+
+    /* variantes que conservan su identidad visual dentro de la barra */
+    nav.primary a.pill.khairo-ia-link{
+      background:linear-gradient(135deg,rgba(79,140,255,0.12),rgba(123,97,255,0.09));
+      border:1px solid rgba(79,140,255,0.28);
+      color:var(--accent1);font-weight:800;gap:6px;
+    }
+    nav.primary a.pill.khairo-ia-link .ia-indicator{animation:pulseGlow 2s ease-in-out infinite;color:var(--accent1);font-weight:900;font-size:12px;}
+    nav.primary a.pill.khairo-ia-link .ia-nav-badge{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;font-size:8px;font-weight:900;letter-spacing:0.8px;padding:2px 5px;border-radius:4px;text-transform:uppercase;vertical-align:middle;}
+    nav.primary a.pill.nav-catalogo-btn{background:rgba(0,217,255,0.08);border:1px solid rgba(0,217,255,0.25);color:#00d9ff;}
+    nav.primary a.pill.cta{
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      color:#fff;box-shadow:0 6px 20px rgba(79,140,255,0.25);
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    nav.primary a.pill.cta .pill-label,
+    nav.primary a.pill.cta .pill-label-hover{color:#fff;}
 
     .mobile-toggle{display:none;background:transparent;border:0;color:var(--muted);font-size:22px}
     .ctas{display:flex;gap:10px;align-items:center}.ctas a{font-weight:700;padding:8px 10px;border-radius:10px;text-decoration:none}.ctas a.ghost{border:1px solid rgba(255,255,255,0.04);color:var(--muted);background:transparent}
@@ -1007,6 +1070,56 @@
     .tech-item img:hover{transform:scale(1.08);filter:brightness(1.15)}
     .tech-label{font-size:11px;font-weight:700;color:var(--muted);text-align:center;width:100px;opacity:0.7;transition:opacity var(--transition-fast);line-height:1.2}
     .tech-item:hover .tech-label{opacity:1;color:var(--accent1)}
+
+    /* ── LogoLoop (adaptación vanilla JS de React Bits) ── */
+    .tech-grid .logoloop.tech-bar{
+      position:relative;
+      overflow:hidden;
+      flex-wrap:nowrap;
+      justify-content:flex-start;
+      width:100%;
+      max-width:920px;
+    }
+    .logoloop__track{
+      display:flex;
+      width:max-content;
+      will-change:transform;
+      user-select:none;
+    }
+    .logoloop__list{
+      display:flex;
+      align-items:flex-start;
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    .logoloop__item{
+      flex:0 0 auto;
+      margin-right:40px;
+    }
+    .logoloop--fade::before,
+    .logoloop--fade::after{
+      content:'';
+      position:absolute;
+      top:0;bottom:0;
+      width:clamp(24px,10%,90px);
+      pointer-events:none;
+      z-index:2;
+    }
+    .logoloop--fade::before{
+      left:0;
+      background:linear-gradient(to right, #04060f 0%, rgba(4,6,15,0) 100%);
+    }
+    .logoloop--fade::after{
+      right:0;
+      background:linear-gradient(to left, #04060f 0%, rgba(4,6,15,0) 100%);
+    }
+    @media (prefers-reduced-motion: reduce){
+      .logoloop__track{ transform:none !important; }
+    }
+    @media (max-width:768px){
+      .tech-grid .logoloop.tech-bar{ max-width:100%; }
+    }
     
 
     h1{font-size:clamp(2rem,4.2vw,3.2rem);margin:0 0 18px 0;line-height:1.02;font-weight:900;transition:transform var(--transition-medium)}
@@ -2430,6 +2543,58 @@
     }
     .fase-btn:hover{background:rgba(79,140,255,0.1);border-color:rgba(79,140,255,0.5);transform:translateX(4px)}
 
+    /* ════════════════════════════════
+       FOLDER — carpeta interactiva con tags
+       (adaptación vanilla JS/CSS de React Bits)
+    ════════════════════════════════ */
+    .fase-card:has(.kh-folder.open){ overflow:visible; }
+    .kh-folder-slot{ height:64px; display:flex; align-items:flex-end; margin:2px 0 4px; position:relative; z-index:2; }
+    .kh-folder{
+      --kh-paper-1:#e6e6e6; --kh-paper-2:#f2f2f2; --kh-paper-3:#ffffff;
+      transition:all 0.2s ease-in; cursor:pointer; outline:none;
+    }
+    .kh-folder:hover{ transform:translateY(-4px); }
+    .kh-folder:hover .kh-paper{ transform:translate(-50%, 0%); }
+    .kh-folder:hover .kh-folder__front{ transform:skew(15deg) scaleY(0.6); }
+    .kh-folder:hover .kh-folder__front.right{ transform:skew(-15deg) scaleY(0.6); }
+    .kh-folder.open{ transform:translateY(-4px); }
+    .kh-folder.open .kh-paper:nth-child(1){ transform:translate(-120%, -70%) rotateZ(-15deg); }
+    .kh-folder.open .kh-paper:nth-child(1):hover{ transform:translate(-120%, -70%) rotateZ(-15deg) scale(1.08); }
+    .kh-folder.open .kh-paper:nth-child(2){ transform:translate(10%, -70%) rotateZ(15deg); height:80%; }
+    .kh-folder.open .kh-paper:nth-child(2):hover{ transform:translate(10%, -70%) rotateZ(15deg) scale(1.08); }
+    .kh-folder.open .kh-paper:nth-child(3){ transform:translate(-50%, -100%) rotateZ(5deg); height:80%; }
+    .kh-folder.open .kh-paper:nth-child(3):hover{ transform:translate(-50%, -100%) rotateZ(5deg) scale(1.08); }
+    .kh-folder.open .kh-folder__front{ transform:skew(15deg) scaleY(0.6); }
+    .kh-folder.open .kh-folder__front.right{ transform:skew(-15deg) scaleY(0.6); }
+    .kh-folder__back{
+      position:relative; width:100px; height:80px;
+      background:var(--kh-folder-back-color,#4785ff);
+      border-radius:0 10px 10px 10px;
+    }
+    .kh-folder__back::after{
+      position:absolute; z-index:0; bottom:98%; left:0; content:'';
+      width:30px; height:10px; background:var(--kh-folder-back-color,#4785ff);
+      border-radius:5px 5px 0 0;
+    }
+    .kh-paper{
+      position:absolute; z-index:2; bottom:10%; left:50%;
+      transform:translate(-50%, 10%); width:70%; height:80%;
+      background:var(--kh-paper-1); border-radius:8px;
+      transition:all 0.3s ease-in-out;
+      display:flex; align-items:center; justify-content:center; text-align:center;
+      padding:4px; overflow:hidden;
+      font-size:9px; font-weight:800; line-height:1.15; color:#1a1a2e;
+    }
+    .kh-paper:nth-child(2){ background:var(--kh-paper-2); width:80%; height:70%; }
+    .kh-paper:nth-child(3){ background:var(--kh-paper-3); width:90%; height:60%; }
+    .kh-folder__front{
+      position:absolute; z-index:3; width:100%; height:100%;
+      background:var(--kh-folder-color,#70a1ff);
+      border-radius:5px 10px 10px 10px;
+      transform-origin:bottom; transition:all 0.3s ease-in-out;
+    }
+    .kh-folder:focus-visible{ outline:2px solid #ffffff; outline-offset:4px; border-radius:10px; }
+
     /* ── MODAL DE FASE ── */
     .fase-modal{
       position:fixed;inset:0;z-index:2500;
@@ -3265,11 +3430,30 @@ html.khairo-locked body{
   .khairo-loader{ transition:opacity 500ms ease !important; clip-path:none !important; }
   .khairo-loader.hide{ opacity:0 !important; }
 }
-</style></head>
+/* Red de seguridad para AnimatedContent: si el dispositivo está en
+   modo lite, o JS/GSAP no cargan, estas secciones nunca quedan ocultas. */
+.kh-lite .hero, .kh-lite #khairo-hub, .kh-lite #claridad, .kh-lite #servicios,
+.kh-lite #metodo, .kh-lite #planes, .kh-lite #faq, .kh-lite #casos, .kh-lite #tecnologia {
+  visibility: visible !important;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<noscript><style>
+.hero, #khairo-hub, #claridad, #servicios, #metodo, #planes, #faq, #casos, #tecnologia { visibility: visible !important; }
+</style></noscript>
+</head>
 
 <body>
 
-  <!-- ── Star field background ── -->
+  <!-- ── Beams background (WebGL, adaptado de React Bits) ── -->
+  <div id="khBeamsBg" aria-hidden="true"></div>
+
+  <!-- ── Ribbons: efecto de cursor global (WebGL, adaptado de React Bits) ── -->
+  <div id="khRibbonsFx" aria-hidden="true"></div>
+
+  <!-- ── Star field background (reemplazado por Beams, ver arriba; oculto por CSS) ── -->
   <div id="bgStars" aria-hidden="true">
     <div class="bg-flow"></div>
     <div class="bg-beam"></div>
@@ -3945,13 +4129,71 @@ html.khairo-locked body{
       </div>
 
       <nav class="primary" aria-label="Navegación principal">
-        <a href="#" id="khairoIA" class="khairo-ia-link"><span class="ia-indicator">✦</span> Khairo IA <span class="ia-nav-badge">v3</span></a>
-        <a href="#metodo">Método</a>
-        <a href="#casos">Casos</a>
-        <a href="#planes">Planes</a>
-        <a href="areas-especificas.html">Áreas específicas</a>
-        <a href="catalogo-kairo.html" class="nav-catalogo-btn">📖 Catálogo</a>
-        <a href="#contacto" class="cta">Agendar</a>
+        <ul class="pill-list" role="menubar">
+          <li role="none">
+            <a href="#" id="khairoIA" class="pill khairo-ia-link" role="menuitem" aria-label="Khairo IA">
+              <span class="hover-circle" aria-hidden="true"></span>
+              <span class="label-stack">
+                <span class="pill-label"><span class="ia-indicator">✦</span> Khairo IA <span class="ia-nav-badge">v3</span></span>
+                <span class="pill-label-hover" aria-hidden="true"><span class="ia-indicator">✦</span> Khairo IA <span class="ia-nav-badge">v3</span></span>
+              </span>
+            </a>
+          </li>
+          <li role="none">
+            <a href="#metodo" class="pill" role="menuitem" aria-label="Método">
+              <span class="hover-circle" aria-hidden="true"></span>
+              <span class="label-stack">
+                <span class="pill-label">Método</span>
+                <span class="pill-label-hover" aria-hidden="true">Método</span>
+              </span>
+            </a>
+          </li>
+          <li role="none">
+            <a href="#casos" class="pill" role="menuitem" aria-label="Casos">
+              <span class="hover-circle" aria-hidden="true"></span>
+              <span class="label-stack">
+                <span class="pill-label">Casos</span>
+                <span class="pill-label-hover" aria-hidden="true">Casos</span>
+              </span>
+            </a>
+          </li>
+          <li role="none">
+            <a href="#planes" class="pill" role="menuitem" aria-label="Planes">
+              <span class="hover-circle" aria-hidden="true"></span>
+              <span class="label-stack">
+                <span class="pill-label">Planes</span>
+                <span class="pill-label-hover" aria-hidden="true">Planes</span>
+              </span>
+            </a>
+          </li>
+          <li role="none">
+            <a href="areas-especificas.html" class="pill" role="menuitem" aria-label="Áreas específicas">
+              <span class="hover-circle" aria-hidden="true"></span>
+              <span class="label-stack">
+                <span class="pill-label">Áreas específicas</span>
+                <span class="pill-label-hover" aria-hidden="true">Áreas específicas</span>
+              </span>
+            </a>
+          </li>
+          <li role="none">
+            <a href="catalogo-kairo.html" class="pill nav-catalogo-btn" role="menuitem" aria-label="Catálogo">
+              <span class="hover-circle" aria-hidden="true"></span>
+              <span class="label-stack">
+                <span class="pill-label">📖 Catálogo</span>
+                <span class="pill-label-hover" aria-hidden="true">📖 Catálogo</span>
+              </span>
+            </a>
+          </li>
+          <li role="none">
+            <a href="#contacto" class="pill cta" role="menuitem" aria-label="Agendar">
+              <span class="hover-circle" aria-hidden="true"></span>
+              <span class="label-stack">
+                <span class="pill-label">Agendar</span>
+                <span class="pill-label-hover" aria-hidden="true">Agendar</span>
+              </span>
+            </a>
+          </li>
+        </ul>
 
         <div class="ecosystem" id="ecosystemWrapper">
           <button id="ecosystemBtn" class="ecosystem-btn" aria-expanded="false" aria-haspopup="true">
@@ -4046,7 +4288,7 @@ html.khairo-locked body{
   <main>
     <div class="container">
 
-      <section class="hero" aria-label="Hero principal">
+      <section class="hero" aria-label="Hero principal" style="visibility:hidden">
 
         <!-- Barra top -->
         <div class="hero-topbar">
@@ -4143,7 +4385,7 @@ html.khairo-locked body{
       <!-- ═══════════════════════════════════════
            SECCIÓN: NAVEGADOR RÁPIDO — KHAIRO HUB
       ═══════════════════════════════════════ -->
-      <section id="khairo-hub" aria-label="Mapa de secciones">
+      <section id="khairo-hub" aria-label="Mapa de secciones" style="visibility:hidden">
       <style>
         #khairo-hub { padding: 64px 0 52px; position: relative; }
         .hub-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
@@ -4170,6 +4412,43 @@ html.khairo-locked body{
         .hub-icon-coral  { background: rgba(248,113,113,0.12); }
         .hub-icon-pink   { background: rgba(236,72,153,0.12); }
         .hub-icon-gray   { background: rgba(255,255,255,0.07); }
+        /* ── GlassIcons (React Bits, adaptado): reemplaza el ícono plano
+           por un botón de vidrio 3D. Se activa al pasar el mouse sobre
+           toda la tarjeta (.hub-card), no sobre el ícono aislado. ── */
+        .hub-glass-icon {
+          width: 38px; height: 38px; flex-shrink: 0; position: relative;
+          perspective: 24em; transform-style: preserve-3d;
+        }
+        .hub-glass-icon .icon-btn__back,
+        .hub-glass-icon .icon-btn__front {
+          position: absolute; inset: 0; border-radius: 10px;
+          transition: transform 0.3s cubic-bezier(.83,0,.17,1), opacity 0.3s cubic-bezier(.83,0,.17,1);
+        }
+        .hub-glass-icon .icon-btn__back {
+          box-shadow: 0.3em -0.3em 0.5em hsla(223,10%,10%,0.18);
+          transform: rotate(15deg);
+          transform-origin: 100% 100%;
+          will-change: transform;
+        }
+        .hub-glass-icon .icon-btn__front {
+          background-color: hsla(0,0%,100%,0.15);
+          box-shadow: 0 0 0 0.08em hsla(0,0%,100%,0.3) inset;
+          backdrop-filter: blur(0.5em); -webkit-backdrop-filter: blur(0.5em);
+          display: flex; align-items: center; justify-content: center;
+          transform-origin: 80% 50%;
+          will-change: transform;
+          font-size: 18px;
+        }
+        .hub-card:hover .hub-glass-icon .icon-btn__back  { transform: rotate(25deg) translate3d(-0.3em, -0.3em, 0.3em); }
+        .hub-card:hover .hub-glass-icon .icon-btn__front { transform: translate3d(0, 0, 1.2em); }
+        .hub-glass-blue    .icon-btn__back { background: linear-gradient(hsl(223,90%,50%), hsl(208,90%,50%)); }
+        .hub-glass-purple  .icon-btn__back { background: linear-gradient(hsl(283,90%,50%), hsl(268,90%,50%)); }
+        .hub-glass-teal    .icon-btn__back { background: linear-gradient(hsl(168,80%,40%), hsl(178,80%,36%)); }
+        .hub-glass-amber   .icon-btn__back { background: linear-gradient(hsl(43,90%,50%), hsl(28,90%,50%)); }
+        .hub-glass-emerald .icon-btn__back { background: linear-gradient(hsl(150,70%,45%), hsl(160,70%,38%)); }
+        .hub-glass-coral   .icon-btn__back { background: linear-gradient(hsl(3,90%,60%), hsl(348,85%,58%)); }
+        .hub-glass-pink    .icon-btn__back { background: linear-gradient(hsl(330,85%,55%), hsl(320,80%,50%)); }
+        .hub-glass-gray    .icon-btn__back { background: linear-gradient(hsl(220,12%,55%), hsl(220,12%,38%)); }
         .hub-card-body { flex: 1; }
         .hub-card-name { font-size: 13px; font-weight: 700; color: #e6eef8; margin: 0 0 4px; line-height: 1.3; }
         .hub-card-desc { font-size: 11.5px; color: #6b7585; margin: 0; line-height: 1.5; }
@@ -4198,7 +4477,7 @@ html.khairo-locked body{
         <div class="hub-grid">
 
           <a class="hub-card" href="#claridad">
-            <div class="hub-card-icon hub-icon-blue">🎯</div>
+            <div class="hub-glass-icon hub-glass-blue"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">🎯</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Del caos al control</p>
               <p class="hub-card-desc">Cómo Khairo transforma tu situación en resultados medibles</p>
@@ -4207,7 +4486,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card hub-featured" href="#servicios">
-            <div class="hub-card-icon hub-icon-teal">⚡</div>
+            <div class="hub-glass-icon hub-glass-teal"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">⚡</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Servicios</p>
               <p class="hub-card-desc">Contenido, estrategia, redes, identidad, web y leads</p>
@@ -4216,7 +4495,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card" href="#metodo">
-            <div class="hub-card-icon hub-icon-amber">🗺️</div>
+            <div class="hub-glass-icon hub-glass-amber"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">🗺️</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Cómo trabajamos</p>
               <p class="hub-card-desc">Proceso paso a paso desde diagnóstico hasta resultados</p>
@@ -4225,7 +4504,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card hub-featured" href="#planes">
-            <div class="hub-card-icon hub-icon-green">💎</div>
+            <div class="hub-glass-icon hub-glass-emerald"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">💎</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Planes & Precios</p>
               <p class="hub-card-desc">NOVA, PULSE y ÉLITE — el nivel que necesita tu negocio</p>
@@ -4234,7 +4513,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card" href="#casos">
-            <div class="hub-card-icon hub-icon-coral">📈</div>
+            <div class="hub-glass-icon hub-glass-coral"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">📈</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Casos de éxito</p>
               <p class="hub-card-desc">Resultados reales de clientes en distintas industrias</p>
@@ -4243,7 +4522,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card" href="#faq">
-            <div class="hub-card-icon hub-icon-gray">❓</div>
+            <div class="hub-glass-icon hub-glass-gray"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">❓</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Preguntas frecuentes</p>
               <p class="hub-card-desc">Dudas sobre planes, tiempos y resultados</p>
@@ -4252,7 +4531,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card hub-ia" href="khairo-ia.html">
-            <div class="hub-card-icon hub-icon-purple">✦</div>
+            <div class="hub-glass-icon hub-glass-purple"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">✦</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Khairo IA</p>
               <p class="hub-card-desc">Diagnóstico inteligente en 2 minutos con IA propia</p>
@@ -4261,7 +4540,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card" href="testimonios.html">
-            <div class="hub-card-icon hub-icon-pink">🌟</div>
+            <div class="hub-glass-icon hub-glass-pink"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">🌟</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Testimonios</p>
               <p class="hub-card-desc">Lo que dicen quienes trabajaron con nosotros</p>
@@ -4270,7 +4549,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card" href="#tecnologia">
-            <div class="hub-card-icon hub-icon-blue">🛠️</div>
+            <div class="hub-glass-icon hub-glass-blue"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">🛠️</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Stack tecnológico</p>
               <p class="hub-card-desc">Las herramientas que impulsan nuestros proyectos</p>
@@ -4279,7 +4558,7 @@ html.khairo-locked body{
           </a>
 
           <a class="hub-card hub-featured" href="https://wa.me/573203492632?text=Hola%20Khairo%2C%20quiero%20agendar%20un%20diagn%C3%B3stico" target="_blank" rel="noopener">
-            <div class="hub-card-icon hub-icon-teal">📲</div>
+            <div class="hub-glass-icon hub-glass-teal"><span class="icon-btn__back"></span><span class="icon-btn__front"><span class="icon-btn__icon">📲</span></span></div>
             <div class="hub-card-body">
               <p class="hub-card-name">Agendar diagnóstico</p>
               <p class="hub-card-desc">Habla directo con el equipo — diagnóstico gratuito</p>
@@ -4298,7 +4577,7 @@ html.khairo-locked body{
       <!-- ═══════════════════════════════════════
            SECCIÓN 2 · DEL CAOS AL CONTROL
       ═══════════════════════════════════════ -->
-      <section id="claridad" aria-label="Del caos al control">
+      <section id="claridad" aria-label="Del caos al control" style="visibility:hidden">
 <style>
 /* ═══════════════════════════════════════════════════════════
    CLARIDAD · DEL CAOS AL CONTROL — PREMIUM / APPLE-LIKE
@@ -4960,7 +5239,7 @@ html.khairo-locked body{
 </section>
 
       <!-- SERVICIOS -->
-      <section id="servicios">
+      <section id="servicios" style="visibility:hidden">
       <style>
 /* ════════════════════════════════════════════════════════
    SERVICIOS — ORBIT WORKSPACE
@@ -5831,7 +6110,7 @@ html.khairo-locked body{
 
       <!-- METODO -->
       <div class="section-divider"></div>
-      <section id="metodo">
+      <section id="metodo" style="visibility:hidden">
         <div class="section-title">
           <h2>Cómo trabajamos: nuestra metodología de marketing de crecimiento</h2>
           <p style="color:var(--muted)">Proceso estructurado con fases claras y entregables definidos</p>
@@ -5877,6 +6156,7 @@ html.khairo-locked body{
             <div class="fase-time">7–10 días</div>
             <div class="fase-title">Diagnóstico</div>
             <div class="fase-desc">Reporte completo de diagnóstico, mapeo de oportunidades y 3 acciones inmediatas con impacto medible.</div>
+            <div class="kh-folder-slot" data-color="#4f8cff" data-size="0.72" data-items="Auditoría,Funnel,Quick-wins"></div>
             <div class="fase-tags"><span>Auditoría</span><span>Funnel</span><span>Quick-wins</span></div>
             <button class="fase-btn" onclick="openFaseModal(1)">Profundizar →</button>
           </div>
@@ -5886,6 +6166,7 @@ html.khairo-locked body{
             <div class="fase-time">5–8 días</div>
             <div class="fase-title">Arquitectura</div>
             <div class="fase-desc">Blueprint del sistema, stack elegido y hoja de ruta priorizada. Cada decisión documentada y justificada.</div>
+            <div class="kh-folder-slot" data-color="#7b61ff" data-size="0.72" data-items="Stack,Blueprint,Roadmap"></div>
             <div class="fase-tags"><span>Stack</span><span>Blueprint</span><span>Roadmap</span></div>
             <button class="fase-btn" style="border-color:rgba(123,97,255,0.3);color:#7b61ff" onclick="openFaseModal(2)">Profundizar →</button>
           </div>
@@ -5895,6 +6176,7 @@ html.khairo-locked body{
             <div class="fase-time">14–21 días</div>
             <div class="fase-title">Lanzamiento MVP</div>
             <div class="fase-desc">Campañas MVP activas, tracking instalado y primeros datos accionables para tomar decisiones reales.</div>
+            <div class="kh-folder-slot" data-color="#ff9f40" data-size="0.72" data-items="Campañas,Tracking,A/B Test"></div>
             <div class="fase-tags"><span>Campañas</span><span>Tracking</span><span>A/B Test</span></div>
             <button class="fase-btn" style="border-color:rgba(255,159,64,0.3);color:#ff9f40" onclick="openFaseModal(3)">Profundizar →</button>
           </div>
@@ -5904,6 +6186,7 @@ html.khairo-locked body{
             <div class="fase-time">Continuo</div>
             <div class="fase-title">Escalamiento</div>
             <div class="fase-desc">Optimización semanal, escalado incremental y reportes claros con métricas que importan a tu negocio.</div>
+            <div class="kh-folder-slot" data-color="#00ff88" data-size="0.72" data-items="Cohortes,ROAS,Escalar"></div>
             <div class="fase-tags"><span>Cohortes</span><span>ROAS</span><span>Escalar</span></div>
             <button class="fase-btn" style="border-color:rgba(0,255,136,0.3);color:#00ff88" onclick="openFaseModal(4)">Profundizar →</button>
           </div>
@@ -6138,6 +6421,57 @@ html.khairo-locked body{
 }
 @media(max-width: 960px) { .planes-grid-v2 { grid-template-columns: 1fr; max-width: 480px; } }
 
+/* ── ElectricBorder (React Bits, adaptado — envuelve cada .pkh-card) ── */
+.electric-border {
+  --electric-light-color: var(--electric-border-color);
+  position: relative;
+  border-radius: 24px;
+  overflow: visible;
+  isolation: isolate;
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1);
+}
+.electric-border:hover { transform: translateY(-8px); }
+@supports (color: oklch(from red l c h)) {
+  .electric-border { --electric-light-color: oklch(from var(--electric-border-color) l c h); }
+}
+.eb-canvas-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2;
+}
+.eb-canvas { display: block; }
+.eb-content { position: relative; border-radius: inherit; z-index: 1; height: 100%; }
+.eb-content > .pkh-card { height: 100%; }
+.eb-layers {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+.eb-glow-1, .eb-glow-2, .eb-background-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+.eb-glow-1 { border: 2px solid color-mix(in srgb, var(--electric-border-color) 60%, transparent); filter: blur(1px); }
+.eb-glow-2 { border: 2px solid var(--electric-light-color); filter: blur(4px); }
+.eb-background-glow {
+  z-index: -1;
+  transform: scale(1.1);
+  filter: blur(32px);
+  opacity: 0.3;
+  background: linear-gradient(-30deg, var(--electric-light-color), transparent, var(--electric-border-color));
+}
+/* En kh-lite (móvil / reduced-motion) el canvas animado no se inicia por JS;
+   dejamos solo el resplandor estático, más liviano. */
+.kh-lite .eb-canvas-container { display: none; }
+
 /* ── PLAN CARD ── */
 .pkh-card {
   border-radius: 24px;
@@ -6150,7 +6484,7 @@ html.khairo-locked body{
   flex-direction: column;
   transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s, border-color 0.35s;
 }
-.pkh-card:hover { transform: translateY(-8px); box-shadow: 0 32px 80px rgba(0,0,0,0.5); }
+.pkh-card:hover { box-shadow: 0 32px 80px rgba(0,0,0,0.5); }
 
 /* élite glow */
 .pkh-card.pkh-elite {
@@ -6528,7 +6862,7 @@ html.khairo-locked body{
 .pkh-compare-scroll::-webkit-scrollbar-thumb { background: rgba(79,140,255,0.2); border-radius: 4px; }
 </style>
 
-<section id="planes" class="section-pad">
+<section id="planes" class="section-pad" style="visibility:hidden">
   <div class="wrap">
 
     <!-- Header -->
@@ -6548,6 +6882,10 @@ html.khairo-locked body{
     <div class="planes-grid-v2">
 
       <!-- ── NOVA ── -->
+      <div class="electric-border" style="--electric-border-color:#4f8cff" data-eb-color="#4f8cff" data-eb-speed="1" data-eb-chaos="0.12" data-eb-radius="24">
+      <div class="eb-canvas-container"><canvas class="eb-canvas"></canvas></div>
+      <div class="eb-layers"><div class="eb-glow-1"></div><div class="eb-glow-2"></div><div class="eb-background-glow"></div></div>
+      <div class="eb-content">
       <div class="pkh-card pkh-nova reveal" style="transition-delay:0s">
         <div class="pkh-neon"></div>
         <div class="pkh-glow"></div>
@@ -6589,8 +6927,14 @@ html.khairo-locked body{
           </button>
         </div>
       </div>
+      </div>
+      </div>
 
       <!-- ── PULSE ── -->
+      <div class="electric-border" style="--electric-border-color:#7b61ff" data-eb-color="#7b61ff" data-eb-speed="1" data-eb-chaos="0.12" data-eb-radius="24">
+      <div class="eb-canvas-container"><canvas class="eb-canvas"></canvas></div>
+      <div class="eb-layers"><div class="eb-glow-1"></div><div class="eb-glow-2"></div><div class="eb-background-glow"></div></div>
+      <div class="eb-content">
       <div class="pkh-card pkh-pulse reveal" style="transition-delay:0.08s">
         <div class="pkh-neon"></div>
         <div class="pkh-glow"></div>
@@ -6633,8 +6977,14 @@ html.khairo-locked body{
           </button>
         </div>
       </div>
+      </div>
+      </div>
 
       <!-- ── ÉLITE ── -->
+      <div class="electric-border" style="--electric-border-color:#f59e0b" data-eb-color="#f59e0b" data-eb-speed="1.1" data-eb-chaos="0.14" data-eb-radius="24">
+      <div class="eb-canvas-container"><canvas class="eb-canvas"></canvas></div>
+      <div class="eb-layers"><div class="eb-glow-1"></div><div class="eb-glow-2"></div><div class="eb-background-glow"></div></div>
+      <div class="eb-content">
       <div class="pkh-card pkh-elite reveal" style="transition-delay:0.16s">
         <div class="pkh-neon"></div>
         <div class="pkh-glow"></div>
@@ -6685,6 +7035,8 @@ html.khairo-locked body{
             Ver detalles completos
           </button>
         </div>
+      </div>
+      </div>
       </div>
 
     </div><!-- /planes-grid-v2 -->
@@ -6940,7 +7292,7 @@ document.addEventListener('keydown', function(e) {
 
       <!-- FAQ -->
       <div class="section-divider"></div>
-      <section id="faq">
+      <section id="faq" style="visibility:hidden">
       <style>
         /* ══════════════════════════════════════
            FAQ — IMPACTO VISUAL MÁXIMO
@@ -7319,7 +7671,7 @@ document.addEventListener('keydown', function(e) {
 
       <!-- CASOS — extendidos -->
       <div class="section-divider"></div>
-      <section id="casos">
+      <section id="casos" style="visibility:hidden">
 
         <canvas id="casos-canvas"></canvas>
 
@@ -8028,6 +8380,7 @@ document.addEventListener('keydown', function(e) {
         <style>
           #valkor-band {
             margin: 48px 0 56px;
+            padding: 0 20px;
             position: relative;
           }
 
@@ -8037,6 +8390,70 @@ document.addEventListener('keydown', function(e) {
             letter-spacing: 4px; text-transform: uppercase;
             color: rgba(154,163,178,0.4);
             margin-bottom: 14px;
+          }
+
+          /* ── FlowingMenu (adaptación vanilla JS de React Bits) ── */
+          .flowing-menu-wrap{
+            width:100%;
+            max-width:620px;
+            margin:0 auto;
+            overflow:hidden;
+            border-radius:18px;
+            background:rgba(20,24,34,0.4);
+            backdrop-filter:blur(20px) saturate(150%);
+            -webkit-backdrop-filter:blur(20px) saturate(150%);
+            border:1px solid rgba(255,255,255,0.1);
+            box-shadow:0 16px 50px rgba(2,6,23,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+          }
+          .flowing-menu{
+            display:flex;flex-direction:column;margin:0;padding:0;
+          }
+          .flowing-menu__item{
+            position:relative;overflow:hidden;
+            border-top:1px solid rgba(255,255,255,0.08);
+            height:60px;
+          }
+          .flowing-menu__item:first-child{ border-top:none; }
+          .flowing-menu__item-link{
+            display:flex;align-items:center;justify-content:center;gap:8px;
+            height:100%;position:relative;z-index:1;
+            cursor:pointer;text-transform:uppercase;text-decoration:none;
+            white-space:nowrap;font-weight:800;font-size:14px;letter-spacing:0.3px;
+          }
+          .flowing-menu__item-link:hover{ color:inherit; }
+          .flowing-menu__icon{ font-size:15px; }
+          .flowing-menu__marquee{
+            position:absolute;top:0;left:0;overflow:hidden;
+            width:100%;height:100%;pointer-events:none;
+            transform:translate3d(0,101%,0);
+            background:var(--fm-marquee-bg);
+            z-index:2;
+          }
+          .flowing-menu__marquee-inner-wrap{ height:100%;width:100%;overflow:hidden; }
+          .flowing-menu__marquee-inner{
+            display:flex;align-items:center;position:relative;
+            height:100%;width:fit-content;will-change:transform;
+          }
+          .flowing-menu__marquee-part{
+            display:flex;align-items:center;flex-shrink:0;gap:10px;padding:0 16px;
+            color:var(--fm-marquee-text);
+          }
+          .flowing-menu__marquee-part span{
+            white-space:nowrap;text-transform:uppercase;font-weight:800;
+            font-size:12px;line-height:1;
+          }
+          .flowing-menu__marquee-icon{
+            width:28px;height:28px;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            font-size:14px;flex-shrink:0;
+            background:rgba(255,255,255,0.35);
+          }
+          @media(max-width:600px){
+            .flowing-menu-wrap{ max-width:100%; }
+            .flowing-menu__item{ height:52px; }
+            .flowing-menu__item-link{ font-size:12px;gap:6px; }
+            .flowing-menu__marquee-part span{ font-size:11px; }
+            .flowing-menu__marquee-icon{ width:24px;height:24px;font-size:12px; }
           }
 
           .vband-row {
@@ -8212,52 +8629,84 @@ document.addEventListener('keydown', function(e) {
 
         <div class="vband-label">✦ Ecosistema Khairo · Explora nuestras plataformas</div>
 
-        <div class="vband-row">
+        <div class="flowing-menu-wrap">
+          <nav class="flowing-menu">
 
-          <!-- Branding VALKOR -->
-          <a class="vband-btn vband-btn--pro"
-             href="https://valkorpro.netlify.app"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Visitar Branding VALKOR">
-            <div class="vband-icon">👕</div>
-            <div class="vband-text">
-              <span class="vband-title">Branding VALKOR</span>
-              <span class="vband-sub">Identidad visual, portafolio<br>y proyectos de marca</span>
+            <!-- Branding VALKOR -->
+            <div class="flowing-menu__item" style="--fm-marquee-bg:linear-gradient(135deg,#6366f1,#8b5cf6); --fm-marquee-text:#1e1b3a;">
+              <a class="flowing-menu__item-link"
+                 href="https://valkorpro.netlify.app"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="Visitar Branding VALKOR"
+                 style="color:#a5b4fc;">
+                <span class="flowing-menu__icon">👕</span> Branding VALKOR
+              </a>
+              <div class="flowing-menu__marquee">
+                <div class="flowing-menu__marquee-inner-wrap">
+                  <div class="flowing-menu__marquee-inner" aria-hidden="true">
+                    <div class="flowing-menu__marquee-part">
+                      <span>Branding VALKOR</span>
+                      <div class="flowing-menu__marquee-icon">👕</div>
+                    </div>
+                    <div class="flowing-menu__marquee-part">
+                      <span>Branding VALKOR</span>
+                      <div class="flowing-menu__marquee-icon">👕</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="vband-arrow">
-              <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-          </a>
 
-          <!-- VALKOR Oficial -->
-          <a class="vband-btn vband-btn--oficial"
-             href="https://valkor.netlify.app"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Visitar VALKOR Oficial">
-            <div class="vband-icon">🛍️</div>
-            <div class="vband-text">
-              <span class="vband-title">VALKOR Oficial</span>
-              <span class="vband-sub">Tienda, productos oficiales<br>y colecciones de la marca</span>
+            <!-- VALKOR Oficial -->
+            <div class="flowing-menu__item" style="--fm-marquee-bg:linear-gradient(135deg,#14b8a6,#06b6d4); --fm-marquee-text:#042f2e;">
+              <a class="flowing-menu__item-link"
+                 href="https://valkor.netlify.app"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="Visitar VALKOR Oficial"
+                 style="color:#5eead4;">
+                <span class="flowing-menu__icon">🛍️</span> VALKOR Oficial
+              </a>
+              <div class="flowing-menu__marquee">
+                <div class="flowing-menu__marquee-inner-wrap">
+                  <div class="flowing-menu__marquee-inner" aria-hidden="true">
+                    <div class="flowing-menu__marquee-part">
+                      <span>VALKOR Oficial</span>
+                      <div class="flowing-menu__marquee-icon">🛍️</div>
+                    </div>
+                    <div class="flowing-menu__marquee-part">
+                      <span>VALKOR Oficial</span>
+                      <div class="flowing-menu__marquee-icon">🛍️</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="vband-arrow">
-              <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-          </a>
 
-          <!-- Áreas Específicas -->
-          <a class="vband-btn vband-btn--areas"
-             href="areas-especificas.html"
-             aria-label="Ver Áreas Específicas">
-            <div class="vband-icon">🎯</div>
-            <div class="vband-text">
-              <span class="vband-title">Áreas Específicas</span>
-              <span class="vband-sub">Servicios por especialidad<br>y verticales de negocio</span>
+            <!-- Áreas Específicas -->
+            <div class="flowing-menu__item" style="--fm-marquee-bg:linear-gradient(135deg,#fb923c,#f59e0b); --fm-marquee-text:#451a03;">
+              <a class="flowing-menu__item-link"
+                 href="areas-especificas.html"
+                 aria-label="Ver Áreas Específicas"
+                 style="color:#fdba74;">
+                <span class="flowing-menu__icon">🎯</span> Áreas Específicas
+              </a>
+              <div class="flowing-menu__marquee">
+                <div class="flowing-menu__marquee-inner-wrap">
+                  <div class="flowing-menu__marquee-inner" aria-hidden="true">
+                    <div class="flowing-menu__marquee-part">
+                      <span>Áreas Específicas</span>
+                      <div class="flowing-menu__marquee-icon">🎯</div>
+                    </div>
+                    <div class="flowing-menu__marquee-part">
+                      <span>Áreas Específicas</span>
+                      <div class="flowing-menu__marquee-icon">🎯</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="vband-arrow">
-              <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-          </a>
 
+          </nav>
         </div>
       </div>
 
@@ -8265,7 +8714,7 @@ document.addEventListener('keydown', function(e) {
 <!-- ═══════════════════════════════════════
      SECCIÓN: STACK TECNOLÓGICO
 ═══════════════════════════════════════ -->
-<section id="tecnologia" class="tech-section" aria-label="Tecnologías que usamos">
+<section id="tecnologia" class="tech-section" aria-label="Tecnologías que usamos" style="visibility:hidden">
   <div class="tech-title-wrap">
     <span class="tech-title-chip"><span class="tech-title-chip-dot"></span>Nuestro stack</span>
     <h2 class="tech-title-heading">Tecnologías que <span class="tech-title-gradient">impulsan nuestros resultados</span></h2>
@@ -8276,56 +8725,92 @@ document.addEventListener('keydown', function(e) {
     </div>
   </div>
   <div class="tech-grid">
-    <div class="tech-bar">
+    <div class="logoloop logoloop--horizontal logoloop--fade tech-bar" id="tech-logoloop" role="region" aria-label="Tecnologías que usamos">
+      <div class="logoloop__track">
+        <ul class="logoloop__list" role="list">
 
-      <div class="tech-item">
-        <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Meta Ads">
-          <circle cx="30" cy="30" r="27" fill="rgba(0,129,251,0.12)" stroke="#0081FB" stroke-width="1.4"/>
-          <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#0081FB">M</text>
-        </svg>
-        <span class="tech-label">Meta Ads</span>
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Meta Ads">
+                <circle cx="30" cy="30" r="27" fill="rgba(0,129,251,0.12)" stroke="#0081FB" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#0081FB">M</text>
+              </svg>
+              <span class="tech-label">Meta Ads</span>
+            </div>
+          </li>
+
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Google Ads">
+                <circle cx="30" cy="30" r="27" fill="rgba(66,133,244,0.12)" stroke="#4285F4" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#4285F4">G</text>
+              </svg>
+              <span class="tech-label">Google Ads</span>
+            </div>
+          </li>
+
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="WhatsApp Business">
+                <circle cx="30" cy="30" r="27" fill="rgba(37,211,102,0.12)" stroke="#25D366" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#25D366">W</text>
+              </svg>
+              <span class="tech-label">WhatsApp Business</span>
+            </div>
+          </li>
+
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="ChatGPT">
+                <circle cx="30" cy="30" r="27" fill="rgba(16,163,127,0.12)" stroke="#10A37F" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="13" font-weight="800" fill="#10A37F">IA</text>
+              </svg>
+              <span class="tech-label">ChatGPT</span>
+            </div>
+          </li>
+
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Canva">
+                <circle cx="30" cy="30" r="27" fill="rgba(139,61,255,0.12)" stroke="#8B3DFF" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#8B3DFF">C</text>
+              </svg>
+              <span class="tech-label">Canva</span>
+            </div>
+          </li>
+
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Adobe">
+                <circle cx="30" cy="30" r="27" fill="rgba(250,15,0,0.12)" stroke="#FA0F00" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#FA0F00">A</text>
+              </svg>
+              <span class="tech-label">Adobe</span>
+            </div>
+          </li>
+
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Claude">
+                <circle cx="30" cy="30" r="27" fill="rgba(217,119,87,0.12)" stroke="#D97757" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="13" font-weight="800" fill="#D97757">Cl</text>
+              </svg>
+              <span class="tech-label">Claude</span>
+            </div>
+          </li>
+
+          <li class="logoloop__item" role="listitem">
+            <div class="tech-item">
+              <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="GitHub">
+                <circle cx="30" cy="30" r="27" fill="rgba(230,238,248,0.1)" stroke="#e6eef8" stroke-width="1.4"/>
+                <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="13" font-weight="800" fill="#e6eef8">GH</text>
+              </svg>
+              <span class="tech-label">GitHub</span>
+            </div>
+          </li>
+
+        </ul>
       </div>
-
-      <div class="tech-item">
-        <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Google Ads">
-          <circle cx="30" cy="30" r="27" fill="rgba(66,133,244,0.12)" stroke="#4285F4" stroke-width="1.4"/>
-          <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#4285F4">G</text>
-        </svg>
-        <span class="tech-label">Google Ads</span>
-      </div>
-
-      <div class="tech-item">
-        <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="WhatsApp Business">
-          <circle cx="30" cy="30" r="27" fill="rgba(37,211,102,0.12)" stroke="#25D366" stroke-width="1.4"/>
-          <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#25D366">W</text>
-        </svg>
-        <span class="tech-label">WhatsApp Business</span>
-      </div>
-
-      <div class="tech-item">
-        <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="ChatGPT">
-          <circle cx="30" cy="30" r="27" fill="rgba(16,163,127,0.12)" stroke="#10A37F" stroke-width="1.4"/>
-          <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="13" font-weight="800" fill="#10A37F">IA</text>
-        </svg>
-        <span class="tech-label">ChatGPT</span>
-      </div>
-
-      <div class="tech-item">
-        <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Canva">
-          <circle cx="30" cy="30" r="27" fill="rgba(139,61,255,0.12)" stroke="#8B3DFF" stroke-width="1.4"/>
-          <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#8B3DFF">C</text>
-        </svg>
-        <span class="tech-label">Canva</span>
-      </div>
-
-      <div class="tech-item">
-        <svg class="tech-logo" viewBox="0 0 60 60" role="img" aria-label="Adobe">
-          <circle cx="30" cy="30" r="27" fill="rgba(250,15,0,0.12)" stroke="#FA0F00" stroke-width="1.4"/>
-          <text x="30" y="31" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-size="15" font-weight="800" fill="#FA0F00">A</text>
-        </svg>
-        <span class="tech-label">Adobe</span>
-      </div>
-
     </div>
   </div>
 </section>
@@ -8414,7 +8899,6 @@ document.addEventListener('keydown', function(e) {
           <span class="footer-dot">·</span>
           <a href="#" id="openCookiesDesktop">Cookies</a>
         </div>
-        <div class="footer-made-with">Hecho con <span style="color:#ff4757">♥</span> en Colombia 🇨🇴</div>
       </div>
     </div>
   </div>
@@ -9822,6 +10306,1459 @@ document.querySelectorAll('.site-footer .footer-col-title').forEach(h=>{ h.setAt
       a.classList.add('kh-link-underline');
     });
 
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   AnimatedContent (adaptación vanilla JS de React Bits, GSAP)
+   Cada sección entra con slide + fade + scale al hacer scroll.
+   Respeta window.KH_LITE (móvil / prefers-reduced-motion) para
+   no animar en esos casos: el contenido aparece directo.
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  function animatedContent(el, opts){
+    if(!el) return;
+    opts = opts || {};
+    var distance        = opts.distance != null ? opts.distance : 100;
+    var direction        = opts.direction || 'vertical';
+    var reverse           = !!opts.reverse;
+    var duration          = opts.duration != null ? opts.duration : 0.8;
+    var ease               = opts.ease || 'power3.out';
+    var initialOpacity   = opts.initialOpacity != null ? opts.initialOpacity : 0;
+    var animateOpacity  = opts.animateOpacity !== false;
+    var scale               = opts.scale != null ? opts.scale : 1;
+    var threshold          = opts.threshold != null ? opts.threshold : 0.1;
+    var delay               = opts.delay != null ? opts.delay : 0;
+
+    // En modo lite (móvil / reduced-motion) mostramos el contenido
+    // directo, sin animación de scroll, para no penalizar rendimiento.
+    if(window.KH_LITE || !window.gsap || !window.ScrollTrigger){
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      el.style.visibility = 'visible';
+      return;
+    }
+
+    var axis = direction === 'horizontal' ? 'x' : 'y';
+    var offset = reverse ? -distance : distance;
+    var startPct = (1 - threshold) * 100;
+
+    gsap.set(el, {
+      [axis]: offset,
+      scale: scale,
+      opacity: animateOpacity ? initialOpacity : 1,
+      visibility: 'visible'
+    });
+
+    var tl = gsap.timeline({ paused: true, delay: delay });
+    tl.to(el, {
+      [axis]: 0,
+      scale: 1,
+      opacity: 1,
+      duration: duration,
+      ease: ease
+    });
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top ' + startPct + '%',
+      once: true,
+      onEnter: function(){ tl.play(); }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var sections = [
+      { sel: '.hero',            opts: { distance: 60, direction: 'vertical',   duration: 1,   ease: 'power3.out', threshold: 0.05, initialOpacity: 0.15 } },
+      { sel: '#khairo-hub',      opts: { distance: 80, direction: 'vertical',   duration: 1,   ease: 'power3.out', threshold: 0.15 } },
+      { sel: '#claridad',        opts: { distance: 90, direction: 'vertical',   duration: 1.1, ease: 'power3.out', threshold: 0.15 } },
+      { sel: '#servicios',       opts: { distance: 80, direction: 'vertical',   duration: 1,   ease: 'power3.out', threshold: 0.15 } },
+      { sel: '#metodo',          opts: { distance: 90, direction: 'horizontal', duration: 1,   ease: 'power3.out', threshold: 0.15 } },
+      { sel: '#planes',          opts: { distance: 80, direction: 'vertical',   duration: 1,   ease: 'power3.out', threshold: 0.15 } },
+      { sel: '#faq',             opts: { distance: 60, direction: 'vertical',   duration: 0.9, ease: 'power3.out', threshold: 0.15 } },
+      { sel: '#casos',           opts: { distance: 80, direction: 'vertical',   duration: 1,   ease: 'power3.out', threshold: 0.15 } },
+      { sel: '#tecnologia',      opts: { distance: 60, direction: 'vertical',   duration: 0.9, ease: 'power3.out', threshold: 0.15 } }
+    ];
+
+    if(window.gsap && window.ScrollTrigger){
+      gsap.registerPlugin(ScrollTrigger);
+      sections.forEach(function(s){
+        var el = document.querySelector(s.sel);
+        if(el) animatedContent(el, s.opts);
+      });
+    } else {
+      // CDN de GSAP no disponible: revelamos las secciones sin animar.
+      sections.forEach(function(s){
+        var el = document.querySelector(s.sel);
+        if(el){ el.style.visibility = 'visible'; el.style.opacity = '1'; }
+      });
+    }
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   Beams (adaptación vanilla JS de React Bits, Three.js puro)
+   Fondo global de la página: planos apilados con desplazamiento
+   por ruido (Perlin 3D) y luz direccional, como en el original
+   con @react-three/fiber, pero sin React ni R3F.
+   Se desactiva en KH_LITE (móvil / prefers-reduced-motion) y si
+   WebGL no está disponible, dejando el color de fondo sólido.
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  var noiseGLSL = [
+    'float random (in vec2 st) {',
+    '    return fract(sin(dot(st.xy, vec2(12.9898,78.233)))*43758.5453123);',
+    '}',
+    'float noise (in vec2 st) {',
+    '    vec2 i = floor(st);',
+    '    vec2 f = fract(st);',
+    '    float a = random(i);',
+    '    float b = random(i + vec2(1.0, 0.0));',
+    '    float c = random(i + vec2(0.0, 1.0));',
+    '    float d = random(i + vec2(1.0, 1.0));',
+    '    vec2 u = f * f * (3.0 - 2.0 * f);',
+    '    return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;',
+    '}',
+    'vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}',
+    'vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}',
+    'vec3 fade(vec3 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}',
+    'float cnoise(vec3 P){',
+    '  vec3 Pi0 = floor(P);',
+    '  vec3 Pi1 = Pi0 + vec3(1.0);',
+    '  Pi0 = mod(Pi0, 289.0);',
+    '  Pi1 = mod(Pi1, 289.0);',
+    '  vec3 Pf0 = fract(P);',
+    '  vec3 Pf1 = Pf0 - vec3(1.0);',
+    '  vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);',
+    '  vec4 iy = vec4(Pi0.yy, Pi1.yy);',
+    '  vec4 iz0 = Pi0.zzzz;',
+    '  vec4 iz1 = Pi1.zzzz;',
+    '  vec4 ixy = permute(permute(ix) + iy);',
+    '  vec4 ixy0 = permute(ixy + iz0);',
+    '  vec4 ixy1 = permute(ixy + iz1);',
+    '  vec4 gx0 = ixy0 / 7.0;',
+    '  vec4 gy0 = fract(floor(gx0) / 7.0) - 0.5;',
+    '  gx0 = fract(gx0);',
+    '  vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);',
+    '  vec4 sz0 = step(gz0, vec4(0.0));',
+    '  gx0 -= sz0 * (step(0.0, gx0) - 0.5);',
+    '  gy0 -= sz0 * (step(0.0, gy0) - 0.5);',
+    '  vec4 gx1 = ixy1 / 7.0;',
+    '  vec4 gy1 = fract(floor(gx1) / 7.0) - 0.5;',
+    '  gx1 = fract(gx1);',
+    '  vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);',
+    '  vec4 sz1 = step(gz1, vec4(0.0));',
+    '  gx1 -= sz1 * (step(0.0, gx1) - 0.5);',
+    '  gy1 -= sz1 * (step(0.0, gy1) - 0.5);',
+    '  vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);',
+    '  vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);',
+    '  vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);',
+    '  vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);',
+    '  vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);',
+    '  vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);',
+    '  vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);',
+    '  vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);',
+    '  vec4 norm0 = taylorInvSqrt(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110)));',
+    '  g000 *= norm0.x; g010 *= norm0.y; g100 *= norm0.z; g110 *= norm0.w;',
+    '  vec4 norm1 = taylorInvSqrt(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111)));',
+    '  g001 *= norm1.x; g011 *= norm1.y; g101 *= norm1.z; g111 *= norm1.w;',
+    '  float n000 = dot(g000, Pf0);',
+    '  float n100 = dot(g100, vec3(Pf1.x,Pf0.yz));',
+    '  float n010 = dot(g010, vec3(Pf0.x,Pf1.y,Pf0.z));',
+    '  float n110 = dot(g110, vec3(Pf1.xy,Pf0.z));',
+    '  float n001 = dot(g001, vec3(Pf0.xy,Pf1.z));',
+    '  float n101 = dot(g101, vec3(Pf1.x,Pf0.y,Pf1.z));',
+    '  float n011 = dot(g011, vec3(Pf0.x,Pf1.yz));',
+    '  float n111 = dot(g111, Pf1);',
+    '  vec3 fade_xyz = fade(Pf0);',
+    '  vec4 n_z = mix(vec4(n000,n100,n010,n110),vec4(n001,n101,n011,n111),fade_xyz.z);',
+    '  vec2 n_yz = mix(n_z.xy,n_z.zw,fade_xyz.y);',
+    '  float n_xyz = mix(n_yz.x,n_yz.y,fade_xyz.x);',
+    '  return 2.2 * n_xyz;',
+    '}'
+  ].join('\n');
+
+  function hexToNormalizedRGB(hex){
+    var clean = hex.replace('#', '');
+    var r = parseInt(clean.substring(0, 2), 16);
+    var g = parseInt(clean.substring(2, 4), 16);
+    var b = parseInt(clean.substring(4, 6), 16);
+    return [r / 255, g / 255, b / 255];
+  }
+
+  function extendMaterial(THREE, BaseMaterial, cfg){
+    var physical = THREE.ShaderLib.physical;
+    var baseVert = physical.vertexShader;
+    var baseFrag = physical.fragmentShader;
+    var baseUniforms = physical.uniforms;
+    var baseDefines = physical.defines || {};
+
+    var uniforms = THREE.UniformsUtils.clone(baseUniforms);
+    var defaults = new BaseMaterial(cfg.material || {});
+
+    if (defaults.color) uniforms.diffuse.value = defaults.color;
+    if ('roughness' in defaults) uniforms.roughness.value = defaults.roughness;
+    if ('metalness' in defaults) uniforms.metalness.value = defaults.metalness;
+    if ('envMap' in defaults) uniforms.envMap.value = defaults.envMap;
+    if ('envMapIntensity' in defaults) uniforms.envMapIntensity.value = defaults.envMapIntensity;
+
+    Object.keys(cfg.uniforms || {}).forEach(function(key){
+      var u = cfg.uniforms[key];
+      uniforms[key] = (u !== null && typeof u === 'object' && 'value' in u) ? u : { value: u };
+    });
+
+    var vert = cfg.header + '\n' + (cfg.vertexHeader || '') + '\n' + baseVert;
+    var frag = cfg.header + '\n' + (cfg.fragmentHeader || '') + '\n' + baseFrag;
+
+    Object.keys(cfg.vertex || {}).forEach(function(inc){
+      vert = vert.replace(inc, inc + '\n' + cfg.vertex[inc]);
+    });
+    Object.keys(cfg.fragment || {}).forEach(function(inc){
+      frag = frag.replace(inc, inc + '\n' + cfg.fragment[inc]);
+    });
+
+    return new THREE.ShaderMaterial({
+      defines: Object.assign({}, baseDefines),
+      uniforms: uniforms,
+      vertexShader: vert,
+      fragmentShader: frag,
+      lights: true,
+      fog: !!(cfg.material && cfg.material.fog)
+    });
+  }
+
+  function createStackedPlanesBufferGeometry(THREE, n, width, height, spacing, heightSegments){
+    var geometry = new THREE.BufferGeometry();
+    var numVertices = n * (heightSegments + 1) * 2;
+    var numFaces = n * heightSegments * 2;
+    var positions = new Float32Array(numVertices * 3);
+    var indices = new Uint32Array(numFaces * 3);
+    var uvs = new Float32Array(numVertices * 2);
+
+    var vertexOffset = 0;
+    var indexOffset = 0;
+    var uvOffset = 0;
+    var totalWidth = n * width + (n - 1) * spacing;
+    var xOffsetBase = -totalWidth / 2;
+
+    for (var i = 0; i < n; i++) {
+      var xOffset = xOffsetBase + i * (width + spacing);
+      var uvXOffset = Math.random() * 300;
+      var uvYOffset = Math.random() * 300;
+
+      for (var j = 0; j <= heightSegments; j++) {
+        var y = height * (j / heightSegments - 0.5);
+        positions.set([xOffset, y, 0, xOffset + width, y, 0], vertexOffset * 3);
+
+        var uvY = j / heightSegments;
+        uvs.set([uvXOffset, uvY + uvYOffset, uvXOffset + 1, uvY + uvYOffset], uvOffset);
+
+        if (j < heightSegments) {
+          var a = vertexOffset, b = vertexOffset + 1, c = vertexOffset + 2, d = vertexOffset + 3;
+          indices.set([a, b, c, c, b, d], indexOffset);
+          indexOffset += 6;
+        }
+        vertexOffset += 2;
+        uvOffset += 4;
+      }
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    geometry.computeVertexNormals();
+    return geometry;
+  }
+
+  function initBeamsBackground(container, opts){
+    var THREE = window.THREE;
+    opts = opts || {};
+    var beamWidth      = opts.beamWidth != null ? opts.beamWidth : 2;
+    var beamHeight      = opts.beamHeight != null ? opts.beamHeight : 15;
+    var beamNumber      = opts.beamNumber != null ? opts.beamNumber : 20;
+    var lightColor      = opts.lightColor || '#ffffff';
+    var speed              = opts.speed != null ? opts.speed : 2;
+    var noiseIntensity = opts.noiseIntensity != null ? opts.noiseIntensity : 1.75;
+    var scale              = opts.scale != null ? opts.scale : 0.2;
+    var rotation           = opts.rotation != null ? opts.rotation : 0;
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 1);
+    container.appendChild(renderer.domElement);
+
+    var scene = new THREE.Scene();
+    scene.background = new THREE.Color('#000000');
+
+    var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 20);
+
+    var ambient = new THREE.AmbientLight(0xffffff, 1);
+    scene.add(ambient);
+
+    var dirLight = new THREE.DirectionalLight(new THREE.Color(lightColor), 1);
+    dirLight.position.set(0, 3, 10);
+    scene.add(dirLight);
+
+    var material = extendMaterial(THREE, THREE.MeshStandardMaterial, {
+      header:
+        'varying vec3 vEye;\n' +
+        'varying float vNoise;\n' +
+        'varying vec2 vUv;\n' +
+        'varying vec3 vPosition;\n' +
+        'uniform float time;\n' +
+        'uniform float uSpeed;\n' +
+        'uniform float uNoiseIntensity;\n' +
+        'uniform float uScale;\n' +
+        noiseGLSL,
+      vertexHeader:
+        'float getPos(vec3 pos) {\n' +
+        '  vec3 noisePos = vec3(pos.x * 0., pos.y - uv.y, pos.z + time * uSpeed * 3.) * uScale;\n' +
+        '  return cnoise(noisePos);\n' +
+        '}\n' +
+        'vec3 getCurrentPos(vec3 pos) {\n' +
+        '  vec3 newpos = pos;\n' +
+        '  newpos.z += getPos(pos);\n' +
+        '  return newpos;\n' +
+        '}\n' +
+        'vec3 getNormal(vec3 pos) {\n' +
+        '  vec3 curpos = getCurrentPos(pos);\n' +
+        '  vec3 nextposX = getCurrentPos(pos + vec3(0.01, 0.0, 0.0));\n' +
+        '  vec3 nextposZ = getCurrentPos(pos + vec3(0.0, -0.01, 0.0));\n' +
+        '  vec3 tangentX = normalize(nextposX - curpos);\n' +
+        '  vec3 tangentZ = normalize(nextposZ - curpos);\n' +
+        '  return normalize(cross(tangentZ, tangentX));\n' +
+        '}',
+      fragmentHeader: '',
+      vertex: {
+        '#include <begin_vertex>': 'transformed.z += getPos(transformed.xyz);',
+        '#include <beginnormal_vertex>': 'objectNormal = getNormal(position.xyz);'
+      },
+      fragment: {
+        '#include <dithering_fragment>':
+          'float randomNoise = noise(gl_FragCoord.xy);\n' +
+          'gl_FragColor.rgb -= randomNoise / 15. * uNoiseIntensity;'
+      },
+      material: { fog: true },
+      uniforms: {
+        diffuse: new THREE.Color(hexToNormalizedRGB('#000000')[0], hexToNormalizedRGB('#000000')[1], hexToNormalizedRGB('#000000')[2]),
+        time: { value: 0 },
+        roughness: 0.3,
+        metalness: 0.3,
+        uSpeed: { value: speed },
+        envMapIntensity: 10,
+        uNoiseIntensity: noiseIntensity,
+        uScale: scale
+      }
+    });
+
+    var geometry = createStackedPlanesBufferGeometry(THREE, beamNumber, beamWidth, beamHeight, 0, 100);
+    var mesh = new THREE.Mesh(geometry, material);
+
+    var group = new THREE.Group();
+    group.rotation.z = rotation * Math.PI / 180;
+    group.add(mesh);
+    scene.add(group);
+
+    function resize(){
+      var w = window.innerWidth, h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', resize);
+
+    var clock = new THREE.Clock();
+    var running = true;
+    document.addEventListener('visibilitychange', function(){
+      running = !document.hidden;
+    });
+
+    function animate(){
+      requestAnimationFrame(animate);
+      if(!running) return;
+      var delta = clock.getDelta();
+      material.uniforms.time.value += 0.1 * delta;
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var container = document.getElementById('khBeamsBg');
+    if(!container) return;
+
+    // En modo lite (móvil / reduced-motion) o sin WebGL, dejamos
+    // el color de fondo sólido del contenedor (sin canvas 3D).
+    if(window.KH_LITE || !window.THREE){ return; }
+
+    var canvasTest = document.createElement('canvas');
+    var gl = canvasTest.getContext('webgl') || canvasTest.getContext('experimental-webgl');
+    if(!gl){ return; }
+
+    try {
+      initBeamsBackground(container, {
+        beamWidth: 2,
+        beamHeight: 15,
+        beamNumber: 24,
+        lightColor: '#4f8cff',
+        speed: 1.4,
+        noiseIntensity: 1.3,
+        scale: 0.2,
+        rotation: -8
+      });
+    } catch(e){
+      // Si algo falla en el shader/WebGL, dejamos el color de fondo sólido.
+      console.warn('Beams background no pudo iniciar:', e);
+    }
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   Ribbons (adaptación vanilla JS de React Bits, Three.js puro)
+   Efecto de cursor global: cintas que persiguen el mouse por
+   toda la página, con el mismo shader (desplazamiento + fade)
+   del componente original con ogl, reimplementado sobre
+   THREE.BufferGeometry (ogl no está cargado en este sitio).
+   Fijo a pantalla completa, no bloquea clics (pointer-events:none),
+   por encima de Beams (#khBeamsBg) y por debajo del contenido.
+   Se desactiva en KH_LITE (móvil / prefers-reduced-motion) y si
+   WebGL no está disponible, igual que el resto de efectos WebGL.
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  var VERT = [
+    'precision highp float;',
+    'attribute vec3 position;',
+    'attribute vec3 next;',
+    'attribute vec3 prev;',
+    'attribute vec2 uv;',
+    'attribute float side;',
+    'uniform vec2 uResolution;',
+    'uniform float uDPR;',
+    'uniform float uThickness;',
+    'uniform float uTime;',
+    'uniform float uEnableShaderEffect;',
+    'uniform float uEffectAmplitude;',
+    'varying vec2 vUV;',
+    'vec4 getPosition() {',
+    '    vec4 current = vec4(position, 1.0);',
+    '    vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);',
+    '    vec2 nextScreen = next.xy * aspect;',
+    '    vec2 prevScreen = prev.xy * aspect;',
+    '    vec2 tangent = normalize(nextScreen - prevScreen);',
+    '    vec2 normal = vec2(-tangent.y, tangent.x);',
+    '    normal /= aspect;',
+    '    normal *= mix(1.0, 0.1, pow(abs(uv.y - 0.5) * 2.0, 2.0));',
+    '    float dist = length(nextScreen - prevScreen);',
+    '    normal *= smoothstep(0.0, 0.02, dist);',
+    '    float pixelWidthRatio = 1.0 / (uResolution.y / uDPR);',
+    '    float pixelWidth = current.w * pixelWidthRatio;',
+    '    normal *= pixelWidth * uThickness;',
+    '    current.xy -= normal * side;',
+    '    if(uEnableShaderEffect > 0.5) {',
+    '      current.xy += normal * sin(uTime + current.x * 10.0) * uEffectAmplitude;',
+    '    }',
+    '    return current;',
+    '}',
+    'void main() {',
+    '    vUV = uv;',
+    '    gl_Position = getPosition();',
+    '}'
+  ].join('\n');
+
+  var FRAG = [
+    'precision highp float;',
+    'uniform vec3 uColor;',
+    'uniform float uOpacity;',
+    'uniform float uEnableFade;',
+    'varying vec2 vUV;',
+    'void main() {',
+    '    float fadeFactor = 1.0;',
+    '    if(uEnableFade > 0.5) {',
+    '        fadeFactor = 1.0 - smoothstep(0.0, 1.0, vUV.y);',
+    '    }',
+    '    gl_FragColor = vec4(uColor, uOpacity * fadeFactor);',
+    '}'
+  ].join('\n');
+
+  function makeRibbon(THREE, color, pointCount, thickness, opts){
+    var geometry = new THREE.BufferGeometry();
+    var vertCount = pointCount * 2;
+    var positions = new Float32Array(vertCount * 3);
+    var prevArr = new Float32Array(vertCount * 3);
+    var nextArr = new Float32Array(vertCount * 3);
+    var uvs = new Float32Array(vertCount * 2);
+    var side = new Float32Array(vertCount);
+    var indices = [];
+
+    for (var i = 0; i < pointCount; i++) {
+      var uvY = i / (pointCount - 1);
+      uvs[i * 4 + 0] = 0; uvs[i * 4 + 1] = uvY;
+      uvs[i * 4 + 2] = 1; uvs[i * 4 + 3] = uvY;
+      side[i * 2 + 0] = 1;
+      side[i * 2 + 1] = -1;
+      if (i < pointCount - 1) {
+        var a = i * 2, b = i * 2 + 1, c = i * 2 + 2, d = i * 2 + 3;
+        indices.push(a, b, c, c, b, d);
+      }
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('prev', new THREE.BufferAttribute(prevArr, 3));
+    geometry.setAttribute('next', new THREE.BufferAttribute(nextArr, 3));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geometry.setAttribute('side', new THREE.BufferAttribute(side, 1));
+    geometry.setIndex(indices);
+    geometry.setDrawRange(0, indices.length);
+    geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 9999);
+
+    var material = new THREE.RawShaderMaterial({
+      vertexShader: VERT,
+      fragmentShader: FRAG,
+      uniforms: {
+        uColor: { value: new THREE.Color(color) },
+        uThickness: { value: thickness },
+        uOpacity: { value: 1.0 },
+        uTime: { value: 0.0 },
+        uResolution: { value: new THREE.Vector2(1, 1) },
+        uDPR: { value: window.devicePixelRatio || 1 },
+        uEnableShaderEffect: { value: opts.enableShaderEffect ? 1.0 : 0.0 },
+        uEffectAmplitude: { value: opts.effectAmplitude },
+        uEnableFade: { value: opts.enableFade ? 1.0 : 0.0 }
+      },
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    });
+
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.frustumCulled = false;
+
+    var pts = [];
+    for (var p = 0; p < pointCount; p++) pts.push(new THREE.Vector3());
+
+    return { mesh: mesh, material: material, points: pts, positions: positions, prevArr: prevArr, nextArr: nextArr };
+  }
+
+  function updateRibbonGeometry(ribbon){
+    var pts = ribbon.points;
+    var n = pts.length;
+    for (var i = 0; i < n; i++) {
+      var p = pts[i];
+      var prev = i > 0 ? pts[i - 1] : pts[0];
+      var next = i < n - 1 ? pts[i + 1] : pts[n - 1];
+      var i2 = i * 2, i6 = i * 6;
+      ribbon.positions[i6 + 0] = p.x; ribbon.positions[i6 + 1] = p.y; ribbon.positions[i6 + 2] = p.z;
+      ribbon.positions[i6 + 3] = p.x; ribbon.positions[i6 + 4] = p.y; ribbon.positions[i6 + 5] = p.z;
+      ribbon.prevArr[i6 + 0] = prev.x; ribbon.prevArr[i6 + 1] = prev.y; ribbon.prevArr[i6 + 2] = prev.z;
+      ribbon.prevArr[i6 + 3] = prev.x; ribbon.prevArr[i6 + 4] = prev.y; ribbon.prevArr[i6 + 5] = prev.z;
+      ribbon.nextArr[i6 + 0] = next.x; ribbon.nextArr[i6 + 1] = next.y; ribbon.nextArr[i6 + 2] = next.z;
+      ribbon.nextArr[i6 + 3] = next.x; ribbon.nextArr[i6 + 4] = next.y; ribbon.nextArr[i6 + 5] = next.z;
+      void i2;
+    }
+    ribbon.mesh.geometry.attributes.position.needsUpdate = true;
+    ribbon.mesh.geometry.attributes.prev.needsUpdate = true;
+    ribbon.mesh.geometry.attributes.next.needsUpdate = true;
+  }
+
+  function initRibbons(container, opts){
+    var THREE = window.THREE;
+    opts = opts || {};
+    var colors             = opts.colors || ['#4f8cff'];
+    var baseSpring          = opts.baseSpring != null ? opts.baseSpring : 0.03;
+    var baseFriction        = opts.baseFriction != null ? opts.baseFriction : 0.9;
+    var baseThickness       = opts.baseThickness != null ? opts.baseThickness : 10;
+    var offsetFactor        = opts.offsetFactor != null ? opts.offsetFactor : 0.02;
+    var maxAge              = opts.maxAge != null ? opts.maxAge : 500;
+    var pointCount          = opts.pointCount != null ? opts.pointCount : 50;
+    var speedMultiplier     = opts.speedMultiplier != null ? opts.speedMultiplier : 0.5;
+    var enableFade          = opts.enableFade != null ? opts.enableFade : true;
+    var enableShaderEffect  = opts.enableShaderEffect != null ? opts.enableShaderEffect : true;
+    var effectAmplitude     = opts.effectAmplitude != null ? opts.effectAmplitude : 1;
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    camera.position.z = 1;
+
+    var ribbons = [];
+    var center = (colors.length - 1) / 2;
+    colors.forEach(function(color, index){
+      var spring = baseSpring + (Math.random() - 0.5) * 0.05;
+      var friction = baseFriction + (Math.random() - 0.5) * 0.05;
+      var thickness = baseThickness + (Math.random() - 0.5) * 3;
+      var mouseOffset = new THREE.Vector3(
+        (index - center) * offsetFactor + (Math.random() - 0.5) * 0.01,
+        (Math.random() - 0.5) * 0.1,
+        0
+      );
+      var ribbon = makeRibbon(THREE, color, pointCount, thickness, {
+        enableFade: enableFade,
+        enableShaderEffect: enableShaderEffect,
+        effectAmplitude: effectAmplitude
+      });
+      ribbon.spring = spring;
+      ribbon.friction = friction;
+      ribbon.mouseVelocity = new THREE.Vector3();
+      ribbon.mouseOffset = mouseOffset;
+      scene.add(ribbon.mesh);
+      ribbons.push(ribbon);
+    });
+
+    function resize(){
+      var w = window.innerWidth, h = window.innerHeight;
+      renderer.setSize(w, h);
+      var pixelW = w * renderer.getPixelRatio();
+      var pixelH = h * renderer.getPixelRatio();
+      ribbons.forEach(function(r){
+        r.material.uniforms.uResolution.value.set(pixelW, pixelH);
+      });
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    var mouse = new THREE.Vector3();
+    function updateMouse(e){
+      var x, y;
+      if (e.changedTouches && e.changedTouches.length) {
+        x = e.changedTouches[0].clientX;
+        y = e.changedTouches[0].clientY;
+      } else {
+        x = e.clientX;
+        y = e.clientY;
+      }
+      mouse.set((x / window.innerWidth) * 2 - 1, (y / window.innerHeight) * -2 + 1, 0);
+    }
+    window.addEventListener('mousemove', updateMouse, { passive: true });
+    window.addEventListener('touchmove', updateMouse, { passive: true });
+
+    var tmp = new THREE.Vector3();
+    var running = true;
+    document.addEventListener('visibilitychange', function(){ running = !document.hidden; });
+
+    var lastTime = performance.now();
+    function animate(){
+      requestAnimationFrame(animate);
+      if(!running) return;
+      var currentTime = performance.now();
+      var dt = currentTime - lastTime;
+      lastTime = currentTime;
+
+      ribbons.forEach(function(ribbon){
+        tmp.copy(mouse).add(ribbon.mouseOffset).sub(ribbon.points[0]).multiplyScalar(ribbon.spring);
+        ribbon.mouseVelocity.add(tmp).multiplyScalar(ribbon.friction);
+        ribbon.points[0].add(ribbon.mouseVelocity);
+
+        for (var i = 1; i < ribbon.points.length; i++) {
+          if (isFinite(maxAge) && maxAge > 0) {
+            var segmentDelay = maxAge / (ribbon.points.length - 1);
+            var alpha = Math.min(1, (dt * speedMultiplier) / segmentDelay);
+            ribbon.points[i].lerp(ribbon.points[i - 1], alpha);
+          } else {
+            ribbon.points[i].lerp(ribbon.points[i - 1], 0.9);
+          }
+        }
+        ribbon.material.uniforms.uTime.value = currentTime * 0.001;
+        updateRibbonGeometry(ribbon);
+      });
+
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var container = document.getElementById('khRibbonsFx');
+    if(!container) return;
+
+    // En modo lite (móvil / reduced-motion) o sin WebGL, no se
+    // inicializa: el efecto de cursor no aplica en touch de todas
+    // formas, y evitamos el costo de otro canvas WebGL en móvil.
+    if(window.KH_LITE || !window.THREE){ return; }
+
+    var canvasTest = document.createElement('canvas');
+    var gl = canvasTest.getContext('webgl') || canvasTest.getContext('experimental-webgl');
+    if(!gl){ return; }
+
+    try {
+      initRibbons(container, {
+        colors: ['#4f8cff', '#7b61ff'],
+        baseThickness: 15,
+        pointCount: 60,
+        speedMultiplier: 0.4,
+        maxAge: 675,
+        offsetFactor: 0.02,
+        enableFade: true,
+        enableShaderEffect: true,
+        effectAmplitude: 0.9
+      });
+    } catch(e){
+      // Si algo falla en el shader/WebGL, simplemente no hay efecto de cursor.
+      console.warn('Ribbons no pudo iniciar:', e);
+    }
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   ElectricBorder (adaptación vanilla JS de React Bits)
+   Aplicado a las 3 tarjetas de #planes (NOVA, PULSE, ÉLITE),
+   cada una con el color propio de su plan.
+   Se omite el canvas animado en KH_LITE (móvil / reduced-motion);
+   ahí queda solo el resplandor CSS estático (más liviano).
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  function random(x){ return (Math.sin(x * 12.9898) * 43758.5453) % 1; }
+
+  function noise2D(x, y){
+    var i = Math.floor(x), j = Math.floor(y);
+    var fx = x - i, fy = y - j;
+    var a = random(i + j * 57);
+    var b = random(i + 1 + j * 57);
+    var c = random(i + (j + 1) * 57);
+    var d = random(i + 1 + (j + 1) * 57);
+    var ux = fx * fx * (3.0 - 2.0 * fx);
+    var uy = fy * fy * (3.0 - 2.0 * fy);
+    return a * (1 - ux) * (1 - uy) + b * ux * (1 - uy) + c * (1 - ux) * uy + d * ux * uy;
+  }
+
+  function octavedNoise(x, octaves, lacunarity, gain, baseAmplitude, baseFrequency, time, seed, baseFlatness){
+    var y = 0, amplitude = baseAmplitude, frequency = baseFrequency;
+    for (var i = 0; i < octaves; i++) {
+      var octaveAmplitude = amplitude;
+      if (i === 0) octaveAmplitude *= baseFlatness;
+      y += octaveAmplitude * noise2D(frequency * x + seed * 100, time * frequency * 0.3);
+      frequency *= lacunarity;
+      amplitude *= gain;
+    }
+    return y;
+  }
+
+  function getCornerPoint(centerX, centerY, radius, startAngle, arcLength, progress){
+    var angle = startAngle + progress * arcLength;
+    return { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle) };
+  }
+
+  function getRoundedRectPoint(t, left, top, width, height, radius){
+    var straightWidth = width - 2 * radius;
+    var straightHeight = height - 2 * radius;
+    var cornerArc = (Math.PI * radius) / 2;
+    var totalPerimeter = 2 * straightWidth + 2 * straightHeight + 4 * cornerArc;
+    var distance = t * totalPerimeter;
+    var accumulated = 0;
+    var progress;
+
+    if (distance <= accumulated + straightWidth) {
+      progress = (distance - accumulated) / straightWidth;
+      return { x: left + radius + progress * straightWidth, y: top };
+    }
+    accumulated += straightWidth;
+
+    if (distance <= accumulated + cornerArc) {
+      progress = (distance - accumulated) / cornerArc;
+      return getCornerPoint(left + width - radius, top + radius, radius, -Math.PI / 2, Math.PI / 2, progress);
+    }
+    accumulated += cornerArc;
+
+    if (distance <= accumulated + straightHeight) {
+      progress = (distance - accumulated) / straightHeight;
+      return { x: left + width, y: top + radius + progress * straightHeight };
+    }
+    accumulated += straightHeight;
+
+    if (distance <= accumulated + cornerArc) {
+      progress = (distance - accumulated) / cornerArc;
+      return getCornerPoint(left + width - radius, top + height - radius, radius, 0, Math.PI / 2, progress);
+    }
+    accumulated += cornerArc;
+
+    if (distance <= accumulated + straightWidth) {
+      progress = (distance - accumulated) / straightWidth;
+      return { x: left + width - radius - progress * straightWidth, y: top + height };
+    }
+    accumulated += straightWidth;
+
+    if (distance <= accumulated + cornerArc) {
+      progress = (distance - accumulated) / cornerArc;
+      return getCornerPoint(left + radius, top + height - radius, radius, Math.PI / 2, Math.PI / 2, progress);
+    }
+    accumulated += cornerArc;
+
+    if (distance <= accumulated + straightHeight) {
+      progress = (distance - accumulated) / straightHeight;
+      return { x: left, y: top + height - radius - progress * straightHeight };
+    }
+    accumulated += straightHeight;
+
+    progress = (distance - accumulated) / cornerArc;
+    return getCornerPoint(left + radius, top + radius, radius, Math.PI, Math.PI / 2, progress);
+  }
+
+  function initElectricBorder(container, opts){
+    var color        = opts.color || '#5227FF';
+    var speed         = opts.speed != null ? opts.speed : 1;
+    var chaos          = opts.chaos != null ? opts.chaos : 0.12;
+    var borderRadius = opts.borderRadius != null ? opts.borderRadius : 24;
+
+    var canvasContainer = container.querySelector('.eb-canvas-container');
+    var canvas = container.querySelector('.eb-canvas');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if(!ctx) return;
+
+    var octaves = 10, lacunarity = 1.6, gain = 0.7, amplitude = chaos,
+        frequency = 10, baseFlatness = 0, displacement = 60, borderOffset = 60;
+
+    var timeRef = 0, lastFrameTime = 0, width, height, lastDpr;
+
+    function updateSize(){
+      var rect = container.getBoundingClientRect();
+      var w = rect.width + borderOffset * 2;
+      var h = rect.height + borderOffset * 2;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      lastDpr = dpr;
+      return { width: w, height: h };
+    }
+
+    var size = updateSize();
+    width = size.width; height = size.height;
+
+    function draw(currentTime){
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (dpr !== lastDpr) {
+        var s = updateSize();
+        width = s.width; height = s.height;
+      }
+
+      var deltaTime = (currentTime - lastFrameTime) / 1000;
+      timeRef += deltaTime * speed;
+      lastFrameTime = currentTime;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.scale(lastDpr, lastDpr);
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      var scale = displacement;
+      var left = borderOffset, top = borderOffset;
+      var borderWidth = width - 2 * borderOffset;
+      var borderHeight = height - 2 * borderOffset;
+      var maxRadius = Math.min(borderWidth, borderHeight) / 2;
+      var radius = Math.min(borderRadius, maxRadius);
+
+      var approximatePerimeter = 2 * (borderWidth + borderHeight) + 2 * Math.PI * radius;
+      var sampleCount = Math.floor(approximatePerimeter / 2);
+
+      ctx.beginPath();
+      for (var i = 0; i <= sampleCount; i++) {
+        var progress = i / sampleCount;
+        var point = getRoundedRectPoint(progress, left, top, borderWidth, borderHeight, radius);
+        var xNoise = octavedNoise(progress * 8, octaves, lacunarity, gain, amplitude, frequency, timeRef, 0, baseFlatness);
+        var yNoise = octavedNoise(progress * 8, octaves, lacunarity, gain, amplitude, frequency, timeRef, 1, baseFlatness);
+        var dx = point.x + xNoise * scale;
+        var dy = point.y + yNoise * scale;
+        if (i === 0) ctx.moveTo(dx, dy); else ctx.lineTo(dx, dy);
+      }
+      ctx.closePath();
+      ctx.stroke();
+
+      requestAnimationFrame(draw);
+    }
+
+    if('ResizeObserver' in window){
+      var ro = new ResizeObserver(function(){
+        var s = updateSize();
+        width = s.width; height = s.height;
+      });
+      ro.observe(container);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    if(window.KH_LITE) return; // resplandor CSS estático basta en modo lite
+    document.querySelectorAll('#planes .electric-border').forEach(function(el){
+      try {
+        initElectricBorder(el, {
+          color: el.getAttribute('data-eb-color') || '#5227FF',
+          speed: parseFloat(el.getAttribute('data-eb-speed')) || 1,
+          chaos: parseFloat(el.getAttribute('data-eb-chaos')) || 0.12,
+          borderRadius: parseFloat(el.getAttribute('data-eb-radius')) || 24
+        });
+      } catch(e){
+        console.warn('ElectricBorder no pudo iniciar:', e);
+      }
+    });
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   LogoLoop (adaptación vanilla JS de React Bits)
+   Loop horizontal infinito de logos de tecnologías (#tecnologia),
+   con desaceleración suave al pasar el mouse y fade en los bordes.
+   En KH_LITE (móvil / reduced-motion) los logos quedan estáticos
+   en una sola fila, sin animación, igual que ElectricBorder/Beams.
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  var SMOOTH_TAU = 0.25;     // constante de suavizado de la velocidad
+  var COPY_HEADROOM = 2;     // copias extra para cubrir el ancho del contenedor
+
+  function initLogoLoop(root, opts){
+    opts = opts || {};
+    var speed = opts.speed != null ? opts.speed : 55;           // px/seg, movimiento normal
+    var hoverSpeed = opts.hoverSpeed != null ? opts.hoverSpeed : speed * 0.25; // desaceleración al hover
+
+    var track = root.querySelector('.logoloop__track');
+    var firstList = root.querySelector('.logoloop__list');
+    if(!track || !firstList) return;
+
+    var offset = 0, velocity = 0, seqWidth = 0, isHovered = false;
+    var lastTimestamp = null, rafId = null, resizeTimer = null;
+
+    function measure(){
+      seqWidth = Math.ceil(firstList.getBoundingClientRect().width);
+      if(seqWidth <= 0) return;
+      var containerWidth = root.clientWidth;
+      var copiesNeeded = Math.ceil(containerWidth / seqWidth) + COPY_HEADROOM;
+      var currentCopies = track.querySelectorAll('.logoloop__list').length;
+      for(var i = currentCopies; i < copiesNeeded; i++){
+        var clone = firstList.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+      }
+    }
+
+    function handleResize(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(measure, 200);
+    }
+
+    function handleEnter(){ isHovered = true; }
+    function handleLeave(){ isHovered = false; }
+
+    function animate(timestamp){
+      if(lastTimestamp === null) lastTimestamp = timestamp;
+      var deltaTime = Math.max(0, timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      var target = isHovered ? hoverSpeed : speed;
+      var easing = 1 - Math.exp(-deltaTime / SMOOTH_TAU);
+      velocity += (target - velocity) * easing;
+
+      if(seqWidth > 0){
+        offset = ((offset + velocity * deltaTime) % seqWidth + seqWidth) % seqWidth;
+        track.style.transform = 'translate3d(' + (-offset) + 'px, 0, 0)';
+      }
+      rafId = requestAnimationFrame(animate);
+    }
+
+    // Imágenes (si las hubiera) pueden cambiar el ancho de la secuencia
+    // al cargar; re-medimos cuando todas estén listas.
+    var images = firstList.querySelectorAll('img');
+    if(images.length){
+      var remaining = images.length;
+      var onImgLoad = function(){
+        remaining -= 1;
+        if(remaining <= 0) measure();
+      };
+      images.forEach(function(img){
+        if(img.complete){ onImgLoad(); }
+        else {
+          img.addEventListener('load', onImgLoad, { once:true });
+          img.addEventListener('error', onImgLoad, { once:true });
+        }
+      });
+    }
+
+    measure();
+    window.addEventListener('resize', handleResize, { passive:true });
+    root.addEventListener('mouseenter', handleEnter);
+    root.addEventListener('mouseleave', handleLeave);
+    rafId = requestAnimationFrame(animate);
+
+    return function destroy(){
+      if(rafId !== null) cancelAnimationFrame(rafId);
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+      root.removeEventListener('mouseenter', handleEnter);
+      root.removeEventListener('mouseleave', handleLeave);
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var el = document.getElementById('tech-logoloop');
+    if(!el) return;
+    if(window.KH_LITE) return; // fila estática basta en modo lite
+    try {
+      initLogoLoop(el, { speed: 55, hoverSpeed: 14 });
+    } catch(e){
+      console.warn('LogoLoop no pudo iniciar:', e);
+    }
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   PillNav (adaptación vanilla JS de React Bits)
+   Aplica la animación de círculo-al-hover + swap de etiqueta a
+   los links YA EXISTENTES del navbar (nav.primary .pill), sin
+   tocar sus href, ids ni el dropdown de Ecosistema / menú móvil.
+   Requiere GSAP (ya cargado arriba). No corre en el menú móvil
+   porque nav.primary se oculta en esa vista (ver CSS).
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  if(!window.gsap) return;
+  var EASE = 'power3.easeOut';
+
+  function layoutPills(pills){
+    pills.forEach(function(pill){
+      var circle = pill.querySelector('.hover-circle');
+      var label = pill.querySelector('.pill-label');
+      var hoverLabel = pill.querySelector('.pill-label-hover');
+      if(!circle) return;
+
+      var rect = pill.getBoundingClientRect();
+      var w = rect.width, h = rect.height;
+      if(w === 0 || h === 0) return;
+
+      var R = ((w * w) / 4 + h * h) / (2 * h);
+      var D = Math.ceil(2 * R) + 2;
+      var delta = Math.ceil(R - Math.sqrt(Math.max(0, R * R - (w * w) / 4))) + 1;
+      var originY = D - delta;
+
+      circle.style.width = D + 'px';
+      circle.style.height = D + 'px';
+      circle.style.bottom = '-' + delta + 'px';
+
+      gsap.set(circle, { xPercent: -50, scale: 0, transformOrigin: '50% ' + originY + 'px' });
+      if(label) gsap.set(label, { y: 0 });
+      if(hoverLabel) gsap.set(hoverLabel, { y: h + 12, opacity: 0 });
+
+      if(pill._pillTl) pill._pillTl.kill();
+      var tl = gsap.timeline({ paused: true });
+      tl.to(circle, { scale: 1.2, xPercent: -50, duration: 2, ease: EASE, overwrite: 'auto' }, 0);
+      if(label) tl.to(label, { y: -(h + 8), duration: 2, ease: EASE, overwrite: 'auto' }, 0);
+      if(hoverLabel){
+        gsap.set(hoverLabel, { y: Math.ceil(h + 100), opacity: 0 });
+        tl.to(hoverLabel, { y: 0, opacity: 1, duration: 2, ease: EASE, overwrite: 'auto' }, 0);
+      }
+      pill._pillTl = tl;
+    });
+  }
+
+  function initPillNav(){
+    var pills = Array.prototype.slice.call(document.querySelectorAll('nav.primary .pill'));
+    if(!pills.length) return;
+
+    layoutPills(pills);
+
+    pills.forEach(function(pill){
+      pill.addEventListener('mouseenter', function(){
+        var tl = pill._pillTl;
+        if(!tl) return;
+        if(pill._pillActiveTween) pill._pillActiveTween.kill();
+        pill._pillActiveTween = tl.tweenTo(tl.duration(), { duration: 0.3, ease: EASE, overwrite: 'auto' });
+      });
+      pill.addEventListener('mouseleave', function(){
+        var tl = pill._pillTl;
+        if(!tl) return;
+        if(pill._pillActiveTween) pill._pillActiveTween.kill();
+        pill._pillActiveTween = tl.tweenTo(0, { duration: 0.2, ease: EASE, overwrite: 'auto' });
+      });
+    });
+
+    var resizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function(){ layoutPills(pills); }, 200);
+    }, { passive: true });
+
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(function(){ layoutPills(pills); }).catch(function(){});
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    try {
+      initPillNav();
+    } catch(e){
+      console.warn('PillNav no pudo iniciar:', e);
+    }
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   FlowingMenu (adaptación vanilla JS de React Bits)
+   Filas apiladas en #valkor-band. Al pasar el mouse por el
+   link, un marquee con el degradado propio de cada plataforma
+   entra desde el borde más cercano (arriba/abajo) y se desliza
+   en loop infinito. Los href y el destino de cada item no cambian.
+   En KH_LITE (móvil / reduced-motion / sin GSAP) las filas quedan
+   estáticas — no hay hover en touch, así que no se pierde nada.
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  if(!window.gsap) return;
+
+  var ANIM_DEFAULTS = { duration: 0.6, ease: 'expo' };
+
+  function distMetric(x, y, x2, y2){
+    var dx = x - x2, dy = y - y2;
+    return dx * dx + dy * dy;
+  }
+
+  function findClosestEdge(mouseX, mouseY, width, height){
+    var topDist = distMetric(mouseX, mouseY, width / 2, 0);
+    var bottomDist = distMetric(mouseX, mouseY, width / 2, height);
+    return topDist < bottomDist ? 'top' : 'bottom';
+  }
+
+  function setupItem(item){
+    var link = item.querySelector('.flowing-menu__item-link');
+    var marquee = item.querySelector('.flowing-menu__marquee');
+    var inner = item.querySelector('.flowing-menu__marquee-inner');
+    var firstPart = inner && inner.querySelector('.flowing-menu__marquee-part');
+    if(!link || !marquee || !inner || !firstPart) return;
+
+    var tween = null;
+    var resizeTimer = null;
+
+    function ensureRepetitions(){
+      var contentWidth = firstPart.offsetWidth;
+      if(contentWidth === 0) return;
+      var needed = Math.max(4, Math.ceil(window.innerWidth / contentWidth) + 2);
+      var current = inner.querySelectorAll('.flowing-menu__marquee-part').length;
+      for(var i = current; i < needed; i++){
+        inner.appendChild(firstPart.cloneNode(true));
+      }
+    }
+
+    function setupMarqueeAnim(){
+      var contentWidth = firstPart.offsetWidth;
+      if(contentWidth === 0) return;
+      if(tween) tween.kill();
+      tween = gsap.to(inner, { x: -contentWidth, duration: 16, ease: 'none', repeat: -1 });
+    }
+
+    ensureRepetitions();
+    setTimeout(setupMarqueeAnim, 50);
+
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function(){
+        ensureRepetitions();
+        setupMarqueeAnim();
+      }, 200);
+    }, { passive: true });
+
+    link.addEventListener('mouseenter', function(ev){
+      var rect = item.getBoundingClientRect();
+      var x = ev.clientX - rect.left, y = ev.clientY - rect.top;
+      var edge = findClosestEdge(x, y, rect.width, rect.height);
+      gsap.timeline({ defaults: ANIM_DEFAULTS })
+        .set(marquee, { y: edge === 'top' ? '-101%' : '101%' }, 0)
+        .set(inner, { y: edge === 'top' ? '101%' : '-101%' }, 0)
+        .to([marquee, inner], { y: '0%' }, 0);
+    });
+
+    link.addEventListener('mouseleave', function(ev){
+      var rect = item.getBoundingClientRect();
+      var x = ev.clientX - rect.left, y = ev.clientY - rect.top;
+      var edge = findClosestEdge(x, y, rect.width, rect.height);
+      gsap.timeline({ defaults: ANIM_DEFAULTS })
+        .to(marquee, { y: edge === 'top' ? '-101%' : '101%' }, 0)
+        .to(inner, { y: edge === 'top' ? '101%' : '-101%' }, 0);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    if(window.KH_LITE) return; // sin hover en touch; las filas quedan estáticas
+    try {
+      document.querySelectorAll('#valkor-band .flowing-menu__item').forEach(setupItem);
+    } catch(e){
+      console.warn('FlowingMenu no pudo iniciar:', e);
+    }
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   ClickSpark (adaptación vanilla JS de React Bits)
+   Efecto de clic global: al hacer clic/tap en cualquier parte
+   de la página, salen pequeñas chispas desde el punto de clic.
+   Canvas 2D fijo a pantalla completa, pointer-events:none (no
+   bloquea nada), por encima de todo el contenido. Los clics se
+   escuchan en window, no en el propio canvas.
+   No depende de WebGL, así que sí corre en móvil; solo respeta
+   prefers-reduced-motion.
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  function initClickSpark(opts){
+    opts = opts || {};
+    var sparkColor  = opts.sparkColor || '#4f8cff';
+    var sparkSize    = opts.sparkSize != null ? opts.sparkSize : 10;
+    var sparkRadius  = opts.sparkRadius != null ? opts.sparkRadius : 15;
+    var sparkCount   = opts.sparkCount != null ? opts.sparkCount : 8;
+    var duration     = opts.duration != null ? opts.duration : 400;
+    var easing       = opts.easing || 'ease-out';
+    var extraScale   = opts.extraScale != null ? opts.extraScale : 1.0;
+
+    var canvas = document.createElement('canvas');
+    canvas.style.position = 'fixed';
+    canvas.style.inset = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.zIndex = '9999';
+    canvas.style.pointerEvents = 'none';
+    canvas.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    function resizeCanvas(){
+      var w = window.innerWidth, h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    var resizeTimeout;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeCanvas, 100);
+    });
+    resizeCanvas();
+
+    function easeFunc(t){
+      switch(easing){
+        case 'linear': return t;
+        case 'ease-in': return t * t;
+        case 'ease-in-out': return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        default: return t * (2 - t);
+      }
+    }
+
+    var sparks = [];
+
+    function addSparks(x, y){
+      var now = performance.now();
+      for (var i = 0; i < sparkCount; i++) {
+        sparks.push({
+          x: x,
+          y: y,
+          angle: (2 * Math.PI * i) / sparkCount,
+          startTime: now
+        });
+      }
+    }
+
+    var running = true;
+    document.addEventListener('visibilitychange', function(){ running = !document.hidden; });
+
+    function draw(timestamp){
+      requestAnimationFrame(draw);
+      if(!running) return;
+      var w = canvas.width / dpr, h = canvas.height / dpr;
+      ctx.clearRect(0, 0, w, h);
+      if(!sparks.length) return;
+
+      sparks = sparks.filter(function(spark){
+        var elapsed = timestamp - spark.startTime;
+        if (elapsed >= duration) return false;
+
+        var progress = elapsed / duration;
+        var eased = easeFunc(progress);
+
+        var distance = eased * sparkRadius * extraScale;
+        var lineLength = sparkSize * (1 - eased);
+
+        var x1 = spark.x + distance * Math.cos(spark.angle);
+        var y1 = spark.y + distance * Math.sin(spark.angle);
+        var x2 = spark.x + (distance + lineLength) * Math.cos(spark.angle);
+        var y2 = spark.y + (distance + lineLength) * Math.sin(spark.angle);
+
+        ctx.strokeStyle = sparkColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+
+        return true;
+      });
+    }
+    requestAnimationFrame(draw);
+
+    function handlePointer(e){
+      var x, y;
+      if (e.changedTouches && e.changedTouches.length) {
+        x = e.changedTouches[0].clientX;
+        y = e.changedTouches[0].clientY;
+      } else {
+        x = e.clientX;
+        y = e.clientY;
+      }
+      addSparks(x, y);
+    }
+    window.addEventListener('click', handlePointer, { passive: true });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion) return; // respeta accesibilidad; el resto de efectos ya no aplican aquí
+
+    try {
+      initClickSpark({
+        sparkColor: '#4f8cff',
+        sparkSize: 10,
+        sparkRadius: 18,
+        sparkCount: 8,
+        duration: 400,
+        easing: 'ease-out',
+        extraScale: 1.0
+      });
+    } catch(e){
+      console.warn('ClickSpark no pudo iniciar:', e);
+    }
+  });
+})();
+</script>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   Folder (adaptación vanilla JS de React Bits)
+   Usado en #metodo: cada fase-card tiene una carpeta con las
+   3 tags de esa fase como "papeles". Clic para abrir/cerrar;
+   con la carpeta abierta, mover el mouse sobre un papel lo
+   desplaza un poco (efecto magnético), igual que el original.
+   Se construye a partir de <div class="kh-folder-slot"
+   data-color="#..." data-size="0.7" data-items="A,B,C"></div>.
+   ──────────────────────────────────────────────────────────── */
+(function(){
+  function darkenColor(hex, percent){
+    var color = hex.charAt(0) === '#' ? hex.slice(1) : hex;
+    if (color.length === 3) {
+      color = color.split('').map(function(c){ return c + c; }).join('');
+    }
+    var num = parseInt(color.slice(0, 6), 16);
+    var r = (num >> 16) & 0xff, g = (num >> 8) & 0xff, b = num & 0xff;
+    r = Math.max(0, Math.min(255, Math.floor(r * (1 - percent))));
+    g = Math.max(0, Math.min(255, Math.floor(g * (1 - percent))));
+    b = Math.max(0, Math.min(255, Math.floor(b * (1 - percent))));
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+  }
+
+  function buildFolder(slot){
+    var color = slot.getAttribute('data-color') || '#5227FF';
+    var size = parseFloat(slot.getAttribute('data-size') || '1');
+    var items = (slot.getAttribute('data-items') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean).slice(0, 3);
+    while (items.length < 3) items.push('');
+
+    var backColor = darkenColor(color, 0.08);
+
+    var scaleWrap = document.createElement('div');
+    scaleWrap.style.transform = 'scale(' + size + ')';
+    scaleWrap.style.transformOrigin = 'bottom left';
+
+    var folder = document.createElement('div');
+    folder.className = 'kh-folder';
+    folder.style.setProperty('--kh-folder-color', color);
+    folder.style.setProperty('--kh-folder-back-color', backColor);
+    folder.tabIndex = 0;
+    folder.setAttribute('role', 'button');
+    folder.setAttribute('aria-expanded', 'false');
+    folder.setAttribute('aria-label', 'Ver detalle: ' + items.filter(Boolean).join(', '));
+
+    var back = document.createElement('div');
+    back.className = 'kh-folder__back';
+
+    var papers = items.map(function(text, i){
+      var paper = document.createElement('div');
+      paper.className = 'kh-paper';
+      paper.textContent = text;
+      back.appendChild(paper);
+      return paper;
+    });
+
+    var front1 = document.createElement('div');
+    front1.className = 'kh-folder__front';
+    var front2 = document.createElement('div');
+    front2.className = 'kh-folder__front right';
+    back.appendChild(front1);
+    back.appendChild(front2);
+
+    folder.appendChild(back);
+    scaleWrap.appendChild(folder);
+    slot.appendChild(scaleWrap);
+
+    var open = false;
+    function resetOffsets(){
+      papers.forEach(function(p){ p.style.translate = ''; });
+    }
+
+    function toggle(){
+      open = !open;
+      folder.classList.toggle('open', open);
+      folder.setAttribute('aria-expanded', String(open));
+      var faseCard = folder.closest('.fase-card');
+      if (faseCard) faseCard.classList.toggle('has-open-folder', open);
+      if (!open) resetOffsets();
+    }
+
+    folder.addEventListener('click', toggle);
+    folder.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+
+    papers.forEach(function(paper){
+      paper.addEventListener('mousemove', function(e){
+        if (!open) return;
+        var rect = paper.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+        var ox = (e.clientX - cx) * 0.15, oy = (e.clientY - cy) * 0.15;
+        paper.style.translate = ox + 'px ' + oy + 'px';
+      });
+      paper.addEventListener('mouseleave', function(){
+        paper.style.translate = '';
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    try {
+      document.querySelectorAll('.kh-folder-slot').forEach(buildFolder);
+    } catch(e){
+      console.warn('Folder no pudo iniciar:', e);
+    }
   });
 })();
 </script>
