@@ -435,7 +435,108 @@
     nav.primary a.pill.cta .pill-label,
     nav.primary a.pill.cta .pill-label-hover{color:#fff;}
 
-    .mobile-toggle{display:none;background:transparent;border:0;color:var(--muted);font-size:22px}
+    /* Botón hamburguesa: área táctil real (44x44), icono SVG con estado
+       abierto/cerrado en vez del carácter ☰ sin dimensiones. */
+    .mobile-toggle{
+      display:none;
+      position:relative;
+      width:44px;height:44px;
+      align-items:center;justify-content:center;
+      background:transparent;border:0;border-radius:10px;
+      color:var(--muted);
+      -webkit-tap-highlight-color:transparent;
+      transition:background 0.2s ease, color 0.2s ease;
+    }
+    .mobile-toggle:active{ background:rgba(255,255,255,0.06); }
+    .mobile-toggle .mt-icon{ position:absolute; transition:opacity 0.2s ease, transform 0.25s ease; }
+    .mobile-toggle .mt-icon-close{ opacity:0; transform:rotate(-90deg) scale(0.7); }
+    .mobile-toggle .mt-icon-open{ opacity:1; transform:rotate(0) scale(1); }
+    .mobile-toggle[aria-expanded="true"]{ color:#e6eef8; }
+    .mobile-toggle[aria-expanded="true"] .mt-icon-open{ opacity:0; transform:rotate(90deg) scale(0.7); }
+    .mobile-toggle[aria-expanded="true"] .mt-icon-close{ opacity:1; transform:rotate(0) scale(1); }
+
+    /* Overlay de fondo detrás del menú móvil */
+    .mobile-menu-overlay{
+      position:fixed; inset:0; z-index:2990;
+      background:rgba(2,6,23,0.6);
+      opacity:0; pointer-events:none;
+      transition:opacity 0.25s ease;
+    }
+    .mobile-menu-overlay.open{ opacity:1; pointer-events:auto; }
+
+    /* Panel del menú móvil — slide-in + fade, no más display:none/block */
+    .mobile-menu{
+      display:none;
+      position:fixed; top:0; right:0; bottom:0;
+      width:min(86vw, 360px);
+      z-index:3000;
+      background:var(--panel);
+      border-left:1px solid rgba(255,255,255,0.06);
+      box-shadow:-24px 0 60px rgba(2,6,23,0.5);
+      transform:translateX(100%);
+      opacity:0;
+      transition:transform 0.28s cubic-bezier(.2,.9,.25,1), opacity 0.28s ease;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    .mobile-menu.open{
+      display:block;
+      transform:translateX(0);
+      opacity:1;
+    }
+    .mm-inner{ padding:20px 18px 28px; display:flex; flex-direction:column; gap:4px; }
+    .mm-link{
+      display:flex; align-items:center; gap:10px;
+      min-height:44px; padding:11px 10px;
+      border-radius:10px;
+      color:#e6eef8; text-decoration:none; font-weight:600; font-size:15px;
+      transition:background 0.15s ease;
+    }
+    .mm-link svg{ flex-shrink:0; opacity:0.85; }
+    .mm-link:active{ background:rgba(255,255,255,0.06); }
+    .mm-ia{ font-weight:800; color:var(--accent1); }
+    .mm-ia .ia-indicator{ animation:pulseGlow 2s ease-in-out infinite; }
+    .mm-cta{
+      display:flex; align-items:center; justify-content:center;
+      min-height:46px; margin-top:6px;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      color:#fff; font-weight:800; text-decoration:none;
+      padding:12px; border-radius:10px; text-align:center;
+      transition:transform 0.15s ease;
+    }
+    .mm-cta:active{ transform:scale(0.98); }
+    .mm-divider{ border:0; height:1px; background:rgba(255,255,255,0.06); margin:10px 0; }
+    .mm-details{ border-radius:12px; color:var(--muted); }
+    .mm-summary{
+      cursor:pointer; list-style:none;
+      display:flex; align-items:center; gap:10px;
+      min-height:44px; padding:11px 10px;
+      border-radius:10px; font-weight:700; color:#e6eef8;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .mm-summary::-webkit-details-marker{ display:none; }
+    .mm-summary:active{ background:rgba(255,255,255,0.06); }
+    .mm-summary span{ flex:1; }
+    .mm-chevron{ transition:transform 0.2s ease; }
+    .mm-details[open] .mm-chevron{ transform:rotate(180deg); }
+    .mm-sub{
+      display:flex; flex-direction:column; gap:4px;
+      padding:6px 6px 6px 14px;
+      border-left:2px solid rgba(0,217,255,0.35);
+      margin:2px 0 4px 20px;
+    }
+    .mm-sub-link{
+      display:flex; align-items:center; gap:10px;
+      min-height:44px; padding:9px 10px;
+      border-radius:8px; color:var(--muted); text-decoration:none; font-size:14px; font-weight:600;
+      transition:background 0.15s ease, color 0.15s ease;
+    }
+    .mm-sub-link svg{ flex-shrink:0; }
+    .mm-sub-link:active{ background:rgba(0,217,255,0.12); color:#e6eef8; }
+
+    @media (prefers-reduced-motion: reduce){
+      .mobile-menu, .mobile-menu-overlay, .mobile-toggle .mt-icon{ transition:none !important; }
+    }
     .ctas{display:flex;gap:10px;align-items:center}.ctas a{font-weight:700;padding:8px 10px;border-radius:10px;text-decoration:none}.ctas a.ghost{border:1px solid rgba(255,255,255,0.04);color:var(--muted);background:transparent}
 
     .ecosystem{position:relative}
@@ -980,8 +1081,31 @@
     @media(max-width:1000px){
       .hero { padding: 40px 0 0; }
       .hero-mid { grid-template-columns: 1fr; }
-      .hero-mid-right { display: none; }
+      /* El video ya no se oculta en móvil: se reordena arriba del texto
+         y se reduce a un tamaño que no penalice el layout. */
+      .hero-mid-right { order: -1; margin-bottom: 4px; }
+      .hero-video-frame { max-width: 380px; aspect-ratio: 4/3; margin: 0 auto; }
+      .hero-video-glow { inset: -10px; }
       .hero h1 { font-size: clamp(2.4rem,7vw,3.6rem); }
+      /* Stats en 2x2 en vez de una fila apretada de 4 — a 360px de ancho
+         nowrap con 4 bloques + separadores se desbordaba o quedaba ilegible. */
+      .hero-stats-row {
+        flex-wrap: wrap;
+        row-gap: 14px;
+        column-gap: 0;
+        width: 100%;
+      }
+      .hstat {
+        flex: 0 0 50%;
+        padding: 0 14px;
+        border-right: 1px solid rgba(255,255,255,0.07);
+      }
+      .hstat:nth-child(2n) { border-right: none; padding-right: 0; }
+      .hstat:nth-child(2n+1) { padding-left: 0; }
+      .hstat-num { font-size: 1.3rem; }
+    }
+    @media(max-width:480px){
+      .hero-video-frame { max-width: 300px; aspect-ratio: 1/1; }
     }
 
     /* Tech logos section */
@@ -1764,6 +1888,12 @@
 
     /* Método: timeline / pasos con icono */
     .method-timeline{display:flex;gap:18px;align-items:flex-start}
+    /* La fila de 4 pasos nunca tuvo un breakpoint propio: en móvil los
+       4 .step-card (flex:1, sin wrap) se apretaban en columnas de ~70px,
+       más angostas que el badge circular — se veían rotos/superpuestos. */
+    @media(max-width:760px){
+      .method-timeline{ flex-direction:column; gap:12px; }
+    }
     .step-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);flex:1;display:flex;gap:12px;align-items:flex-start;opacity:0;animation:slideUpCard 0.6s ease-out forwards;transition:transform 0.3s ease}
     .step-card:hover{transform:translateY(-4px)}
     .step-card:nth-child(1){animation-delay:0.1s}
@@ -1800,7 +1930,7 @@
       .cases{grid-template-columns:1fr}
       .testimonials{grid-template-columns:1fr}
       nav.primary{display:none}
-      .mobile-toggle{display:inline-block}
+      .mobile-toggle{display:inline-flex}
       .container{padding:18px}
       .plans-grid{grid-template-columns:1fr}
       .email-chip{right:12px;bottom:12px;padding:10px 12px;gap:10px}
@@ -1810,8 +1940,10 @@
       .ia-right{order:2}
     }
 
-    /* Respect user's reduced motion preference */
-    @media (prefers-reduced-motion: reduce), (max-width: 768px){
+    /* Respect user's reduced motion preference — independent of screen size.
+       Being on a phone is not the same as asking for less motion, so this
+       no longer fires just because the viewport is narrow. */
+    @media (prefers-reduced-motion: reduce){
       *{transition:none!important}
       .reveal{opacity:1;transform:none}
     }
@@ -1826,7 +1958,8 @@
     /* ── LEAD MAGNET: banner ── */
     .lm-banner{position:relative;max-width:1100px;margin:0 auto 8px;padding:22px 26px;border-radius:16px;display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(120deg, rgba(0,217,255,0.07), rgba(123,97,255,0.07));border:1px solid rgba(0,217,255,0.18);box-shadow:0 20px 60px rgba(2,6,23,0.35)}
     .lm-banner-left{display:flex;align-items:center;gap:16px;min-width:260px}
-    .lm-banner-icon{flex-shrink:0;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:linear-gradient(135deg, rgba(0,217,255,0.18), rgba(123,97,255,0.18));border:1px solid rgba(0,217,255,0.25)}
+    .lm-banner-icon{flex-shrink:0;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#00d9ff;background:linear-gradient(135deg, rgba(0,217,255,0.18), rgba(123,97,255,0.18));border:1px solid rgba(0,217,255,0.25)}
+    .lm-banner-icon svg{width:22px;height:22px}
     .lm-banner-title{font-size:15px;font-weight:800;color:#e6eef8;margin:0 0 3px}
     .lm-banner-sub{font-size:12.5px;color:var(--muted);margin:0}
     .lm-banner-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;background:linear-gradient(135deg,#00d9ff,#4f8cff);color:#02030b;font-weight:800;font-size:13px;text-decoration:none;border:0;cursor:pointer;transition:transform .2s, box-shadow .2s;box-shadow:0 10px 30px rgba(0,217,255,0.25)}
@@ -1843,7 +1976,7 @@
     .lm-desc{font-size:13.5px;line-height:1.6;color:var(--muted);margin:0 0 20px}
     .lm-field{margin-bottom:12px}
     .lm-field label{display:block;font-size:11.5px;font-weight:700;color:#9aa3b2;margin-bottom:6px}
-    .lm-field input{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;color:#e6eef8;font-size:14px}
+    .lm-field input{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px;color:#e6eef8;font-size:16px}
     .lm-field input:focus{outline:none;border-color:rgba(0,217,255,0.5);background:rgba(255,255,255,0.06)}
     .lm-submit{width:100%;padding:13px;border-radius:10px;border:0;background:linear-gradient(135deg,#00d9ff,#4f8cff);color:#02030b;font-weight:800;font-size:14px;cursor:pointer;margin-top:6px;transition:transform .2s}
     .lm-submit:hover{transform:translateY(-2px)}
@@ -3073,6 +3206,35 @@
     @media (prefers-reduced-motion:reduce){
       .step-card,.fase-card,.method,.premium-card,.testimonial-card-modern,.case-card,.contact-panel,.contact-form,.audit-card,.kpi,.tech-grid .tech-bar,.faq-item,.service,.ow-panel,.cs-card,.plan-card-new,.pkh-card{backdrop-filter:none;-webkit-backdrop-filter:none;}
     }
+
+    /* ── DENSIDAD MÓVIL PROPIA ──
+       Hasta acá, ≤768px solo comprimía el layout de escritorio (mismo
+       padding, mismo espaciado, mismo tamaño de tipografía en tarjetas).
+       Este bloque define una densidad y ritmo vertical pensados para
+       pantalla chica / pulgar, no una reducción proporcional del desktop. */
+    @media (max-width:768px){
+      .step-card,.fase-card,.method,.premium-card,.testimonial-card-modern,
+      .case-card,.audit-card,.service,.ow-panel,.cs-card,.plan-card-new,.pkh-card{
+        padding: 18px 16px !important;
+        border-radius: 16px !important;
+      }
+      .plan-card-new{ padding: 22px 18px !important; }
+      .contact-panel,.contact-form{ padding: 20px !important; }
+      .section-title{ margin-bottom: 18px !important; align-items:flex-start !important; flex-direction:column !important; gap:6px !important; }
+      .services-grid,.plans-grid,.cases,.testimonials{ gap: 14px !important; }
+      section, .tech-section, #servicios, #metodo, #planes, #faq, #casos, #tecnologia{
+        padding-top: 44px !important;
+        padding-bottom: 44px !important;
+      }
+      /* Botones/CTA con área táctil consistente en todas las tarjetas */
+      .plan-cta-new,.plan-cta,.h-btn-primary,.h-btn-ghost,.btn-catalogo,
+      .cs-cta-btn,.service-cta,.ow-panel-cta{
+        min-height: 46px;
+      }
+      /* Área táctil del footer e íconos sociales, por debajo de 44px en desktop */
+      .footer-social-btn{ width:44px; height:44px; }
+      .footer-col-list a{ padding:6px 0; min-height:32px; }
+    }
   </style>
   <script id="kh-accessible-language">
     document.addEventListener('DOMContentLoaded', function(){
@@ -3442,9 +3604,26 @@ html.khairo-locked body{
   visibility: visible !important;
 }
 </style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  /* Carga condicional de librerías pesadas (GSAP, ScrollTrigger, Three.js).
+     window.KH_LITE ya sabe si el dispositivo es móvil o pidió reduced-motion;
+     en cualquiera de esos casos estas librerías nunca se usan (todas sus
+     rutinas empiezan con "if (window.KH_LITE) return;"), así que en móvil
+     ya no vale la pena pagar el costo de descarga/parseo de ~200KB. */
+  (function(){
+    function loadScript(src){
+      var s = document.createElement('script');
+      s.src = src;
+      s.defer = true;
+      document.head.appendChild(s);
+    }
+    if (!window.KH_LITE) {
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js');
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js');
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
+    }
+  })();
+</script>
 <noscript><style>
 .hero, #khairo-hub, #claridad, #servicios, #metodo, #planes, #faq, #casos, #tecnologia { visibility: visible !important; }
 </style></noscript>
@@ -4264,26 +4443,52 @@ html.khairo-locked body{
 
       </nav>
 
-      <button class="mobile-toggle" id="mobileToggle" aria-expanded="false">☰</button>
+      <button class="mobile-toggle" id="mobileToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Abrir menú">
+        <svg class="mt-icon mt-icon-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg class="mt-icon mt-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
     </div>
 
-    <div id="mobileMenu" style="display:none;background:var(--panel);border-top:1px solid rgba(255,255,255,0.02);">
-      <div class="container" style="padding:12px 18px;display:flex;flex-direction:column;gap:8px">
-        <a href="#servicios">Servicios</a>
-        <a href="#metodo">Método</a>
-        <a href="#casos">Casos</a>
-        <a href="#planes">Planes</a>
-        <a href="areas-especificas.html">🎯 Áreas específicas</a>
-        <a href="#contacto" style="background:linear-gradient(135deg,var(--accent1),var(--accent2));color:white;padding:10px;border-radius:10px;text-align:center">Agendar</a>
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" hidden></div>
+    <div id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menú de navegación" aria-hidden="true" inert>
+      <div class="container mm-inner">
+        <a href="#" class="khairo-ia-link mm-link mm-ia" role="menuitem">
+          <span class="ia-indicator" aria-hidden="true">✦</span> Khairo IA <span class="ia-nav-badge">v3</span>
+        </a>
+        <a href="#metodo" class="mm-link" role="menuitem">Método</a>
+        <a href="#casos" class="mm-link" role="menuitem">Casos</a>
+        <a href="#planes" class="mm-link" role="menuitem">Planes</a>
+        <a href="areas-especificas.html" class="mm-link" role="menuitem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg>
+          Áreas específicas
+        </a>
+        <a href="catalogo-kairo.html" class="mm-link" role="menuitem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Catálogo
+        </a>
+        <a href="#contacto" class="mm-cta" role="menuitem">Agendar</a>
 
-        <hr style="border:0;height:1px;background:rgba(255,255,255,0.02);margin:8px 0">
-        <details class="ecosystem-details" style="background:transparent;border-radius:12px;padding:6px;color:var(--muted)">
-          <summary style="cursor:pointer;font-weight:700;padding:10px;border-radius:10px;transition:all 0.3s;display:flex;align-items:center;gap:8px">🌐 Ecosistema</summary>
-          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;padding:12px;border:2px solid #00d9ff;border-radius:10px;background:rgba(0,217,255,0.05);box-shadow:0 0 15px 1px rgba(0,217,255,0.2);">
-            <a href="catalogo-kairo.html" style="padding:8px;border-radius:8px;transition:all 0.2s;"  onmouseover="this.style.background='rgba(0,217,255,0.15)'" onmouseout="this.style.background='transparent'">🎨 Catálogo Khairo</a>
-            <a href="https://valkorpro.netlify.app" target="_blank" rel="noopener noreferrer" style="padding:8px;border-radius:8px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,217,255,0.15)'" onmouseout="this.style.background='transparent'">👕 Branding VALKOR</a>
-            <a href="https://valkor.netlify.app" target="_blank" rel="noopener noreferrer" style="padding:8px;border-radius:8px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,217,255,0.15)'" onmouseout="this.style.background='transparent'">🛍️ VALKOR Oficial</a>
-            <a href="areas-especificas.html" style="padding:8px;border-radius:8px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,217,255,0.15)'" onmouseout="this.style.background='transparent'">🎯 Áreas Específicas</a>
+        <hr class="mm-divider">
+
+        <details class="mm-details">
+          <summary class="mm-summary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></svg>
+            <span>Ecosistema</span>
+            <svg class="mm-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </summary>
+          <div class="mm-sub">
+            <a href="catalogo-kairo.html" class="mm-sub-link">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.4-.3-.4-.5-.9-.5-1.4 0-1.1.9-2 2-2h2a4 4 0 0 0 4-4c0-5-4.5-9-9-9z"/><circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
+              Catálogo Khairo
+            </a>
+            <a href="https://valkorpro.netlify.app" target="_blank" rel="noopener noreferrer" class="mm-sub-link">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41 12 22l-9-9 8.59-8.59A2 2 0 0 1 13 4h6a1 1 0 0 1 1 1v6a2 2 0 0 1-.41 1.41z"/><circle cx="16.5" cy="7.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+              Branding VALKOR
+            </a>
+            <a href="https://valkor.netlify.app" target="_blank" rel="noopener noreferrer" class="mm-sub-link">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>
+              VALKOR Oficial
+            </a>
           </div>
         </details>
       </div>
@@ -4333,6 +4538,17 @@ html.khairo-locked body{
               </video>
             </div>
           </div>
+          <script>
+            // El video se muestra en todos los tamaños de pantalla; solo se
+            // pausa si el usuario pidió explícitamente reduced-motion
+            // (independiente de si está en móvil o escritorio).
+            (function(){
+              if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                var v = document.getElementById('hero-video');
+                if (v) { v.removeAttribute('autoplay'); v.pause(); }
+              }
+            })();
+          </script>
         </div>
 
         <!-- Barra inferior: stats + IA -->
@@ -4373,7 +4589,7 @@ html.khairo-locked body{
       <div style="padding:0 24px;">
         <div class="lm-banner">
           <div class="lm-banner-left">
-            <div class="lm-banner-icon">📄</div>
+            <div class="lm-banner-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg></div>
             <div>
               <p class="lm-banner-title">Guía gratis: 5 señales de que estás perdiendo clientes</p>
               <p class="lm-banner-sub">PDF corto, directo, sin relleno — descárgalo en 30 segundos.</p>
@@ -4446,6 +4662,10 @@ html.khairo-locked body{
         }
         .hub-card:hover .hub-glass-icon .icon-btn__back  { transform: rotate(25deg) translate3d(-0.3em, -0.3em, 0.3em); }
         .hub-card:hover .hub-glass-icon .icon-btn__front { transform: translate3d(0, 0, 1.2em); }
+        /* En touch no existe :hover de forma confiable — replicamos el
+           mismo efecto con :active para que el tap dé feedback visual. */
+        .kh-touch .hub-card:active .hub-glass-icon .icon-btn__back  { transform: rotate(25deg) translate3d(-0.3em, -0.3em, 0.3em); }
+        .kh-touch .hub-card:active .hub-glass-icon .icon-btn__front { transform: translate3d(0, 0, 1.2em); }
         .hub-glass-blue    .icon-btn__back { background: linear-gradient(hsl(223,90%,50%), hsl(208,90%,50%)); }
         .hub-glass-purple  .icon-btn__back { background: linear-gradient(hsl(283,90%,50%), hsl(268,90%,50%)); }
         .hub-glass-teal    .icon-btn__back { background: linear-gradient(hsl(168,80%,40%), hsl(178,80%,36%)); }
@@ -5686,8 +5906,10 @@ html.khairo-locked body{
   align-items: center;
   justify-content: center;
   font-size: 13px;
+  color: rgb(var(--op-rgb,79,140,255));
   flex-shrink: 0;
 }
+.ow-deliver-icon svg{ width:15px; height:15px; }
 .ow-deliver-text {
   font-size: 12px;
   font-weight: 700;
@@ -5872,10 +6094,10 @@ html.khairo-locked body{
             <div>
               <div class="ow-delivers-title">Entregables incluidos</div>
               <div class="ow-delivers">
-                <div class="ow-deliver"><div class="ow-deliver-icon">📅</div><div><div class="ow-deliver-text">Calendario mensual</div><div class="ow-deliver-sub">Planificación por objetivo y audiencia</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">✍️</div><div><div class="ow-deliver-text">Copy + diseño visual</div><div class="ow-deliver-sub">Artes listos para publicar</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">🎯</div><div><div class="ow-deliver-text">Bases para gestión de leads</div><div class="ow-deliver-sub">Meta Ads, Google Ads (Etc) y optimización activa</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">📊</div><div><div class="ow-deliver-text">Reporte mensual</div><div class="ow-deliver-sub">Métricas reales, sin vanidades</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><div><div class="ow-deliver-text">Calendario mensual</div><div class="ow-deliver-sub">Planificación por objetivo y audiencia</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></div><div><div class="ow-deliver-text">Copy + diseño visual</div><div class="ow-deliver-sub">Artes listos para publicar</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></div><div><div class="ow-deliver-text">Bases para gestión de leads</div><div class="ow-deliver-sub">Meta Ads, Google Ads (Etc) y optimización activa</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><rect x="6" y="12" width="3" height="8"/><rect x="12" y="7" width="3" height="13"/><rect x="18" y="15" width="3" height="5"/></svg></div><div><div class="ow-deliver-text">Reporte mensual</div><div class="ow-deliver-sub">Métricas reales, sin vanidades</div></div></div>
               </div>
             </div>
             <div class="ow-tools-row">
@@ -5909,10 +6131,10 @@ html.khairo-locked body{
             <div>
               <div class="ow-delivers-title">Entregables incluidos</div>
               <div class="ow-delivers">
-                <div class="ow-deliver"><div class="ow-deliver-icon">🔍</div><div><div class="ow-deliver-text">Auditoría digital completa</div><div class="ow-deliver-sub">Canales, competencia y oportunidades reales</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">🗺️</div><div><div class="ow-deliver-text">Roadmap de 90 días</div><div class="ow-deliver-sub">Acciones priorizadas por impacto y esfuerzo</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">📈</div><div><div class="ow-deliver-text">KPIs personalizados</div><div class="ow-deliver-sub">Métricas que importan para tu modelo de negocio</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">🤝</div><div><div class="ow-deliver-text">Intervenciones de acompañamiento</div><div class="ow-deliver-sub">Revisión semanal o quincenal según plan</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div><div><div class="ow-deliver-text">Auditoría digital completa</div><div class="ow-deliver-sub">Canales, competencia y oportunidades reales</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg></div><div><div class="ow-deliver-text">Roadmap de 90 días</div><div class="ow-deliver-sub">Acciones priorizadas por impacto y esfuerzo</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div><div class="ow-deliver-text">KPIs personalizados</div><div class="ow-deliver-sub">Métricas que importan para tu modelo de negocio</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5 4 10l3-3 4.5 4.5"/><path d="M15.5 14.5 20 10l-3-3-4.5 4.5"/><path d="M8.5 14.5 11 17l1-1 1 1 2.5-2.5"/></svg></div><div><div class="ow-deliver-text">Intervenciones de acompañamiento</div><div class="ow-deliver-sub">Revisión semanal o quincenal según plan</div></div></div>
               </div>
             </div>
             <div class="ow-tools-row">
@@ -5945,10 +6167,10 @@ html.khairo-locked body{
             <div>
               <div class="ow-delivers-title">Entregables incluidos</div>
               <div class="ow-delivers">
-                <div class="ow-deliver"><div class="ow-deliver-icon">📱</div><div><div class="ow-deliver-text">Gestión de 1–4 plataformas</div><div class="ow-deliver-sub">Instagram, TikTok, WhatsApp o Facebook (Según Contrato)</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">🎬</div><div><div class="ow-deliver-text">4–20 piezas mensuales</div><div class="ow-deliver-sub">Posts, reels, stories y carruseles con estrategia</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">💬</div><div><div class="ow-deliver-text">Community management</div><div class="ow-deliver-sub">Respuesta a comentarios y DMs en horario comercial</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">📉</div><div><div class="ow-deliver-text">Reporte de crecimiento</div><div class="ow-deliver-sub">Alcance, engagement, seguidores y leads</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg></div><div><div class="ow-deliver-text">Gestión de 1–4 plataformas</div><div class="ow-deliver-sub">Instagram, TikTok, WhatsApp o Facebook (Según Contrato)</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h18v12H3z"/><path d="m3 8 3-5h3L6 8zM9.5 8l3-5h3l-3 5zM16 8l3-5h2v5z"/></svg></div><div><div class="ow-deliver-text">4–20 piezas mensuales</div><div class="ow-deliver-sub">Posts, reels, stories y carruseles con estrategia</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div><div><div class="ow-deliver-text">Community management</div><div class="ow-deliver-sub">Respuesta a comentarios y DMs en horario comercial</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/></svg></div><div><div class="ow-deliver-text">Reporte de crecimiento</div><div class="ow-deliver-sub">Alcance, engagement, seguidores y leads</div></div></div>
               </div>
             </div>
             <div class="ow-tools-row">
@@ -5982,10 +6204,10 @@ html.khairo-locked body{
             <div>
               <div class="ow-delivers-title">Entregables incluidos</div>
               <div class="ow-delivers">
-                <div class="ow-deliver"><div class="ow-deliver-icon">🎨</div><div><div class="ow-deliver-text">Logo y variaciones</div><div class="ow-deliver-sub">Versión primaria, secundaria e isotipo</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">📖</div><div><div class="ow-deliver-text">Manual de marca completo</div><div class="ow-deliver-sub">Paleta, tipografía y usos correctos</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">🗂️</div><div><div class="ow-deliver-text">Kit de piezas gráficas</div><div class="ow-deliver-sub">Plantillas para redes, presentaciones y docs</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">🌐</div><div><div class="ow-deliver-text">Diseño web / landing</div><div class="ow-deliver-sub">Opcional según plan contratado</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.4-.3-.4-.5-.9-.5-1.4 0-1.1.9-2 2-2h2a4 4 0 0 0 4-4c0-5-4.5-9-9-9z"/><circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div><div><div class="ow-deliver-text">Logo y variaciones</div><div class="ow-deliver-sub">Versión primaria, secundaria e isotipo</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><div class="ow-deliver-text">Manual de marca completo</div><div class="ow-deliver-sub">Paleta, tipografía y usos correctos</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></div><div><div class="ow-deliver-text">Kit de piezas gráficas</div><div class="ow-deliver-sub">Plantillas para redes, presentaciones y docs</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></svg></div><div><div class="ow-deliver-text">Diseño web / landing</div><div class="ow-deliver-sub">Opcional según plan contratado</div></div></div>
               </div>
             </div>
             <div class="ow-tools-row">
@@ -6019,10 +6241,10 @@ html.khairo-locked body{
             <div>
               <div class="ow-delivers-title">Entregables incluidos</div>
               <div class="ow-delivers">
-                <div class="ow-deliver"><div class="ow-deliver-icon">🖥️</div><div><div class="ow-deliver-text">Landing page o sitio completo</div><div class="ow-deliver-sub">Diseño + desarrollo responsive optimizado</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">🔎</div><div><div class="ow-deliver-text">SEO técnico básico</div><div class="ow-deliver-sub">Velocidad, metadatos y estructura para Google</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">⚡</div><div><div class="ow-deliver-text">Integraciones de captación</div><div class="ow-deliver-sub">Formularios, WhatsApp, CRM y email automático</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">📡</div><div><div class="ow-deliver-text">Analytics configurado</div><div class="ow-deliver-sub">GA4, píxeles y eventos de conversión activos</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div><div class="ow-deliver-text">Landing page o sitio completo</div><div class="ow-deliver-sub">Diseño + desarrollo responsive optimizado</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div><div><div class="ow-deliver-text">SEO técnico básico</div><div class="ow-deliver-sub">Velocidad, metadatos y estructura para Google</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></div><div><div class="ow-deliver-text">Integraciones de captación</div><div class="ow-deliver-sub">Formularios, WhatsApp, CRM y email automático</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-6"/><path d="M8 15a4 4 0 0 1 8 0"/><path d="M5 12a7 7 0 0 1 14 0"/><circle cx="12" cy="15" r="1" fill="currentColor" stroke="none"/></svg></div><div><div class="ow-deliver-text">Analytics configurado</div><div class="ow-deliver-sub">GA4, píxeles y eventos de conversión activos</div></div></div>
               </div>
             </div>
             <div class="ow-tools-row">
@@ -6057,10 +6279,10 @@ html.khairo-locked body{
             <div>
               <div class="ow-delivers-title">Entregables incluidos</div>
               <div class="ow-delivers">
-                <div class="ow-deliver"><div class="ow-deliver-icon">🎯</div><div><div class="ow-deliver-text">Embudo de captación personalizado</div><div class="ow-deliver-sub">Landing page, formulario y flujo de nutrición por etapa</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">⚙️</div><div><div class="ow-deliver-text">Automatización de seguimiento</div><div class="ow-deliver-sub">Secuencias de email/WhatsApp para no perder ningún prospecto</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">📊</div><div><div class="ow-deliver-text">Scoring y calificación de leads</div><div class="ow-deliver-sub">Filtras los prospectos calientes antes de que lleguen a tu equipo</div></div></div>
-                <div class="ow-deliver"><div class="ow-deliver-icon">📈</div><div><div class="ow-deliver-text">Dashboard de métricas en tiempo real</div><div class="ow-deliver-sub">CPL, tasa de conversión, calidad y volumen por canal</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></div><div><div class="ow-deliver-text">Embudo de captación personalizado</div><div class="ow-deliver-sub">Landing page, formulario y flujo de nutrición por etapa</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div><div><div class="ow-deliver-text">Automatización de seguimiento</div><div class="ow-deliver-sub">Secuencias de email/WhatsApp para no perder ningún prospecto</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><rect x="6" y="12" width="3" height="8"/><rect x="12" y="7" width="3" height="13"/><rect x="18" y="15" width="3" height="5"/></svg></div><div><div class="ow-deliver-text">Scoring y calificación de leads</div><div class="ow-deliver-sub">Filtras los prospectos calientes antes de que lleguen a tu equipo</div></div></div>
+                <div class="ow-deliver"><div class="ow-deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div><div class="ow-deliver-text">Dashboard de métricas en tiempo real</div><div class="ow-deliver-sub">CPL, tasa de conversión, calidad y volumen por canal</div></div></div>
               </div>
             </div>
             <div class="ow-tools-row">
@@ -8644,18 +8866,18 @@ document.addEventListener('keydown', function(e) {
                  target="_blank" rel="noopener noreferrer"
                  aria-label="Visitar Branding VALKOR"
                  style="color:#a5b4fc;">
-                <span class="flowing-menu__icon">👕</span> Branding VALKOR
+                <span class="flowing-menu__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41 12 22l-9-9 8.59-8.59A2 2 0 0 1 13 4h6a1 1 0 0 1 1 1v6a2 2 0 0 1-.41 1.41z"/><circle cx="16.5" cy="7.5" r="1.1" fill="currentColor" stroke="none"/></svg></span> Branding VALKOR
               </a>
               <div class="flowing-menu__marquee">
                 <div class="flowing-menu__marquee-inner-wrap">
                   <div class="flowing-menu__marquee-inner" aria-hidden="true">
                     <div class="flowing-menu__marquee-part">
                       <span>Branding VALKOR</span>
-                      <div class="flowing-menu__marquee-icon">👕</div>
+                      <div class="flowing-menu__marquee-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41 12 22l-9-9 8.59-8.59A2 2 0 0 1 13 4h6a1 1 0 0 1 1 1v6a2 2 0 0 1-.41 1.41z"/><circle cx="16.5" cy="7.5" r="1.1" fill="currentColor" stroke="none"/></svg></div>
                     </div>
                     <div class="flowing-menu__marquee-part">
                       <span>Branding VALKOR</span>
-                      <div class="flowing-menu__marquee-icon">👕</div>
+                      <div class="flowing-menu__marquee-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41 12 22l-9-9 8.59-8.59A2 2 0 0 1 13 4h6a1 1 0 0 1 1 1v6a2 2 0 0 1-.41 1.41z"/><circle cx="16.5" cy="7.5" r="1.1" fill="currentColor" stroke="none"/></svg></div>
                     </div>
                   </div>
                 </div>
@@ -8669,18 +8891,18 @@ document.addEventListener('keydown', function(e) {
                  target="_blank" rel="noopener noreferrer"
                  aria-label="Visitar VALKOR Oficial"
                  style="color:#5eead4;">
-                <span class="flowing-menu__icon">🛍️</span> VALKOR Oficial
+                <span class="flowing-menu__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg></span> VALKOR Oficial
               </a>
               <div class="flowing-menu__marquee">
                 <div class="flowing-menu__marquee-inner-wrap">
                   <div class="flowing-menu__marquee-inner" aria-hidden="true">
                     <div class="flowing-menu__marquee-part">
                       <span>VALKOR Oficial</span>
-                      <div class="flowing-menu__marquee-icon">🛍️</div>
+                      <div class="flowing-menu__marquee-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg></div>
                     </div>
                     <div class="flowing-menu__marquee-part">
                       <span>VALKOR Oficial</span>
-                      <div class="flowing-menu__marquee-icon">🛍️</div>
+                      <div class="flowing-menu__marquee-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg></div>
                     </div>
                   </div>
                 </div>
@@ -8693,18 +8915,18 @@ document.addEventListener('keydown', function(e) {
                  href="areas-especificas.html"
                  aria-label="Ver Áreas Específicas"
                  style="color:#fdba74;">
-                <span class="flowing-menu__icon">🎯</span> Áreas Específicas
+                <span class="flowing-menu__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></span> Áreas Específicas
               </a>
               <div class="flowing-menu__marquee">
                 <div class="flowing-menu__marquee-inner-wrap">
                   <div class="flowing-menu__marquee-inner" aria-hidden="true">
                     <div class="flowing-menu__marquee-part">
                       <span>Áreas Específicas</span>
-                      <div class="flowing-menu__marquee-icon">🎯</div>
+                      <div class="flowing-menu__marquee-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></div>
                     </div>
                     <div class="flowing-menu__marquee-part">
                       <span>Áreas Específicas</span>
-                      <div class="flowing-menu__marquee-icon">🎯</div>
+                      <div class="flowing-menu__marquee-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></div>
                     </div>
                   </div>
                 </div>
@@ -9092,16 +9314,53 @@ document.querySelectorAll('.site-footer .footer-col-title').forEach(h=>{ h.setAt
     onScroll();
   })();
 
-  // mobile menu toggle
+  // mobile menu toggle — overlay, animación, cierre con Escape/overlay/enlace,
+  // y bloqueo de scroll de fondo mientras está abierto.
   const mobileToggle = document.getElementById('mobileToggle');
   const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+  function openMobileMenu(){
+    if(!mobileMenu) return;
+    mobileMenu.hidden = false;
+    mobileMenu.removeAttribute('inert');
+    mobileMenuOverlay && (mobileMenuOverlay.hidden = false);
+    requestAnimationFrame(function(){
+      mobileMenu.classList.add('open');
+      mobileMenuOverlay && mobileMenuOverlay.classList.add('open');
+    });
+    mobileMenu.setAttribute('aria-hidden', 'false');
+    mobileToggle && mobileToggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobileMenu(){
+    if(!mobileMenu) return;
+    mobileMenu.classList.remove('open');
+    mobileMenuOverlay && mobileMenuOverlay.classList.remove('open');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    mobileMenu.setAttribute('inert', '');
+    mobileToggle && mobileToggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      if(!mobileMenu.classList.contains('open')){
+        mobileMenu.hidden = true;
+        mobileMenuOverlay && (mobileMenuOverlay.hidden = true);
+      }
+    }, 300);
+  }
   if(mobileToggle){
     mobileToggle.addEventListener('click', ()=>{
-      const open = mobileMenu && mobileMenu.style && mobileMenu.style.display === 'block';
-      if(mobileMenu && mobileMenu.style) mobileMenu.style.display = open ? 'none' : 'block';
-      mobileToggle.setAttribute('aria-expanded', (!open).toString());
+      const isOpen = mobileMenu && mobileMenu.classList.contains('open');
+      isOpen ? closeMobileMenu() : openMobileMenu();
     });
   }
+  mobileMenuOverlay && mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+  mobileMenu && mobileMenu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', closeMobileMenu);
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) closeMobileMenu();
+  });
 
   // Ecosystem dropdown (desktop) - robust handler inside DOMContentLoaded
   document.addEventListener('DOMContentLoaded', function(){
@@ -9410,9 +9669,9 @@ document.querySelectorAll('.site-footer .footer-col-title').forEach(h=>{ h.setAt
       #kia-user-input {
         flex:1; background:rgba(255,255,255,0.05);
         border:1px solid rgba(255,255,255,0.09);
-        color:#e6eef8; padding:11px 14px;
+        color:#e6eef8; padding:13px 14px;
         border-radius:10px; outline:none;
-        font-family:inherit; font-size:14px;
+        font-family:inherit; font-size:16px;
         transition:border-color 0.2s;
       }
       #kia-user-input::placeholder { color:rgba(154,163,178,0.45); }
